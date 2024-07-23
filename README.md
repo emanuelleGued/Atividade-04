@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# Atividade-04
-=======
 # Avaliação Sprints 6 e 7 - Programa de Bolsas Compass UOL e AWS - maio/2024
 Avaliação das sexta e sétima sprints do programa de bolsas Compass UOL para formação em machine learning para AWS.
 ## Execução (Código Fonte)
