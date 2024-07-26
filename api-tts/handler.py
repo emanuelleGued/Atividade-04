@@ -19,3 +19,12 @@ def v1_description(event, context):
     response = {"statusCode": 200, "body": json.dumps(body)}
 
     return response
+
+def v1_tts(event, context):
+    body = {
+        "message": "New route POST."
+    }
+
+    response = {"statusCode": 200, "body": json.dumps(body)}
+
+    return response
