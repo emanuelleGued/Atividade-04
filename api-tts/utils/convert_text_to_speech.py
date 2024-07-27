@@ -8,14 +8,36 @@ BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 
 polly = boto3.client('polly')
 s3 = boto3.client('s3')
+comprehend = boto3.client('comprehend')
+
+def detect_language(text):
+    response = comprehend.detect_dominant_language(Text=text)
+    languages = response['Languages']
+    if not languages:
+        raise Exception("Unable to detect language.")
+    return languages[0]['LanguageCode']
 
 def convert_text_to_speech_and_upload(phrase, hash_id):
     try:
-        # Converter texto em áudio usando Amazon Polly
+        # Detectar o idioma do texto
+        language_code = detect_language(phrase)
+        
+        # Mapear código de idioma para voz do Polly
+        voice_id_map = {
+            'en': 'Joanna',  # Inglês
+            'pt': 'Camila',  # Português
+        }
+        
+        voice_id = voice_id_map.get(language_code, 'Joanna')  # Padrão para inglês se não encontrado
+        
+        # Converter texto em áudio usando Amazon Polly com SSML
+        ssml_text = f'<speak><lang xml:lang="{language_code}">{phrase}</lang></speak>'
+        
         response = polly.synthesize_speech(
-            Text=phrase,
+            TextType='ssml',
+            Text=ssml_text,
             OutputFormat='mp3',
-            VoiceId='Joanna'
+            VoiceId=voice_id
         )
         
         # Salvar o áudio no S3
