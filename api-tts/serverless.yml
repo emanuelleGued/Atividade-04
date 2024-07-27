@@ -1,9 +1,19 @@
 service: api-tts
-frameworkVersion: '3'
 
 provider:
   name: aws
   runtime: python3.9
+  environment:
+    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}
+    DYNAMODB_TABLE: ${env:DYNAMODB_TABLE}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
 
 functions:
   health:
