@@ -1,0 +1,178 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+*.whl
+
+# Serverless directories
+.serverless/
+.node_modules/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff
+instance/
+.webassets-cache
+
+# Scrapy stuff
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# dotenv
+.env
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+.metadata/
+*.bak
+*.backup
+*.tmp
+*.temp
+*.orig
+*.patch
+__MACOSX/
+Thumbs.db
+.DS_Store
+
+# Custom excludes
+logs/
+*.log
+*.tfrecord
+*.sdf
+*.pkl
+*.h5
+*.hdf5
+*.csv
+*.tsv
+*.xls
+*.xlsx
+*.yaml
+*.json
+*.out
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdb
+*.mp4
+*.mp3
+*.wav
+*.avi
+*.mov
+*.flv
+*.wmv
+*.mpg
+*.mpeg
+*.xml
+*.pdf
+*.dat
+*.tar
+*.gz
+*.zip
+*.rar
+*.7z
+*.bz2
+*.xz
+*.iso
+
+# AWS Lambda deployment package
+package.zip
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+# Yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn/releases
+.yarn/plugins
+.yarn/sdks
+.yarn/versions
