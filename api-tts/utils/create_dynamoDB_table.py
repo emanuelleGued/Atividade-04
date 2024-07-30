@@ -5,9 +5,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 table_name = os.getenv('DYNAMODB_TABLE')
+profile_name = os.getenv("PROFILE_NAME")
+
+boto_session = boto3.Session(profile_name=profile_name)
 
 def create_dynamodb_table():
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto_session.resource("dynamodb")
 
     table = dynamodb.create_table(
         TableName=table_name,

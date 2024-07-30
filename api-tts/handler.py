@@ -2,7 +2,7 @@ import json
 
 def health(event, context):
     body = {
-        "message": "Go Serverless v3.0! Your function executed successfully!",
+        "message": "Go Serverless v4.1! Your function executed successfully!",
         "input": event,
     }
 
