@@ -4,12 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-profile_name = os.getenv('AWS_PROFILE')
-table_name = 'audios-polly'
+table_name = os.getenv('DYNAMODB_TABLE')
 
 def create_dynamodb_table():
-    session = boto3.Session(profile_name=profile_name)
-    dynamodb = session.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb')
 
     table = dynamodb.create_table(
         TableName=table_name,

@@ -7,13 +7,10 @@ import os
 load_dotenv()
 
 # Pegar variáveis do ambiente
-profile_name = os.getenv('AWS_PROFILE')
 bucket_name = os.getenv('S3_BUCKET_NAME')
 
 def create_s3_bucket():
-    # Inicia uma sessão usando o perfil SSO
-    session = boto3.Session(profile_name=profile_name)
-    s3_client = session.client('s3')
+    s3_client = boto3.client('s3')
     
     # Cria o bucket
     s3_client.create_bucket(Bucket=bucket_name)

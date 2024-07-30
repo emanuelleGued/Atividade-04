@@ -29,7 +29,7 @@ functions:
           path: /v1
           method: get
   v1_tts:
-    handler: handler.v1_tts
+    handler: post.v1_tts
     events:
       - httpApi:
           path: /v1/tts
