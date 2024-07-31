@@ -91,6 +91,9 @@ celerybeat.pid
 # dotenv
 .env
 
+# venv
+.venv
+
 # IDEs and editors
 .idea/
 .vscode/
