@@ -3,13 +3,16 @@ import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response
 export const handleGetDetailsOfPizzaIntent = async (event) => {
   let pizzaType;
 
+  // Verificar se o slot 'PizzaType' está presente e possui um valor
   try {
-    // Acessando o valor do slot 'PizzaType'
     pizzaType = event.sessionState.intent.slots.PizzaType.value.interpretedValue;
   } catch (e) {
     console.error(`Erro ao acessar o slot: ${e}`);
+  }
 
-    return handleElicitSlotResponse(event, 'PizzaType', 'Desculpe, não consegui processar a sua solicitação. Por favor, informe o sabor da pizza novamente.');
+  // Se o valor do slot 'PizzaType' não estiver presente, solicitar ao usuário que forneça
+  if (!pizzaType) {
+    return handleElicitSlotResponse(event, 'PizzaType', 'De qual sabor você gostaria de saber mais?');
   }
 
   const menuDetails = {
@@ -22,12 +25,13 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
     "Marguerita": "Ingredientes da Marguerita: Tomate, queijo muçarela e manjericão.",
     "Napolitana": "Ingredientes da Napolitana: Tomate, queijo e alho.",
     "Toscana": "Ingredientes da Toscana: Calabresa, queijo, tomate e manjericão.",
-    "Vegetariana": "Ingredientes da Vegetariana: Legumes variados, queijo e molho de tomate."
+    "Vegetariana": "Ingredientes da Vegetariana: Legumes variados, queijo e molho de tomate.",
+    "Quatro Queijos": "Ingredientes da Quatro Queijos: muçarela, gorgonzola, parmesão, catupiry e orégano."
   };
 
   let responseMessage;
 
-  if (pizzaType && menuDetails[pizzaType]) {
+  if (menuDetails[pizzaType]) {
     responseMessage = menuDetails[pizzaType];
   } else {
     responseMessage = "Infelizmente o sabor que você deseja não está no nosso cardápio.";
