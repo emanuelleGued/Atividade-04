@@ -30,11 +30,11 @@ export const handleCloseResponse = (event, state, message) => {
         state: state
       }
     },
-    messages: [
+    messages: message ? [
       {
         contentType: 'PlainText',
         content: message
       }
-    ]
+    ] : []
   };
 };
