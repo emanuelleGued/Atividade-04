@@ -5,7 +5,17 @@ import { handleOrderPizzaIntent } from './controllers/order-pizza.js';
 import { handleWelcomeIntent } from './controllers/welcome.js';
 
 export const handler = async (event) => {
-  const intentName = event.sessionState.intent.name;
+  // Encontra a interpretação com a maior confiança acima do minimo de 0.85
+  const highConfidenceInterpretation = event.interpretations.find(
+    interpretation => interpretation.nluConfidence && interpretation.nluConfidence >= 0.85
+  );
+
+  if (!highConfidenceInterpretation) {
+    return await handleFallbackIntent(event);
+  }
+
+  // Processa a intenção correspondente à interpretação de alta confiança
+  const intentName = highConfidenceInterpretation.intent.name;
 
   switch (intentName) {
     case 'WelcomeIntent':
@@ -16,8 +26,6 @@ export const handler = async (event) => {
       return await handleGetDetailsOfPizzaIntent(event);
     case 'OrderPizzaIntent':
       return await handleOrderPizzaIntent(event);
-    case 'FallbackIntent':
-      return await handleFallbackIntent(event);
     default:
       return handleCloseResponse(event, 'Failed', 'Desculpe, não consegui processar a sua solicitação.');
   }
