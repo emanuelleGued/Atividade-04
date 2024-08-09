@@ -1,90 +1,72 @@
 import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
 
-// Exemplo de valores válidos (deverão ser ajustados manualmente)
-const validPizzas = [
-  'Margherita', 'Pepperoni', 'Calabresa', 'Frango com Catupiry',
-  'Churrasco', 'Portuguesa', 'Marguerita', 'Napolitana',
-  'Toscana', 'Vegetariana', 'Quatro Queijos'
-];
-
 const validSizes = ['grande', 'media', 'pequena', 'p', 'm', 'g'];
 
+// Definição do cardápio para consulta
+const menuDetails = [
+  'margherita',
+  'pepperoni',
+  'calabresa',
+  'frango com catupiry',
+  'churrasco',
+  'portuguesa',
+  'napolitana',
+  'toscana',
+  'vegetariana',
+  'quatro queijos'
+];
+
 export const handleOrderPizzaIntent = async (event) => {
-  console.log('Evento recebido:', JSON.stringify(event, null, 2));
-
-  let pizzaType, pizzaSize, deliveryAddress;
+  let responseMessage = "";
 
   try {
-    // Acessar os valores dos slots com verificações adicionais
-    pizzaType = event.sessionState?.intent?.slots?.PizzaType?.value?.interpretedValue || null;
-    pizzaSize = event.sessionState?.intent?.slots?.PizzaSize?.value?.interpretedValue || null;
-    deliveryAddress = event.sessionState?.intent?.slots?.DeliveryAddress?.value?.interpretedValue || null;
+    console.log("Evento recebido:", JSON.stringify(event, null, 2));
 
-    console.log('PizzaType:', pizzaType);
-    console.log('PizzaSize:', pizzaSize);
-    console.log('DeliveryAddress:', deliveryAddress);
-  } catch (e) {
-    console.error(`Erro ao acessar os slots: ${e}`);
-    return handleCloseResponse(event, 'Failed', 'Desculpe, ocorreu um erro ao processar seu pedido.');
-  }
+    if (event.sessionState && event.sessionState.intent && event.sessionState.intent.slots) {
+      const { PizzaType, PizzaSize } = event.sessionState.intent.slots;
 
-  // Validação do tipo de pizza
-  if (!pizzaType) {
-    return handleElicitSlotResponse(event, 'PizzaType', 'Que sabor de pizza você gostaria de pedir?');
-  }
+      // Verificação do tipo de pizza
+      if (PizzaType) {
+        let pizzaTypeSlot = PizzaType.value ? PizzaType.value.originalValue.toLowerCase().trim() : null;
+        console.log("PizzaType recebido:", pizzaTypeSlot);
 
-  let responseMessage;
-  if (validPizzas.includes(pizzaType)) {
-    responseMessage = `Pedido de pizza ${pizzaType} recebido.`;
-  } else {
-    responseMessage = "Infelizmente o sabor que você deseja não está no nosso cardápio.";
-    return handleCloseResponse(event, 'Fulfilled', responseMessage);
-  }
+        if (pizzaTypeSlot && menuDetails.includes(pizzaTypeSlot)) {
+          responseMessage += `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
+        } else {
+          responseMessage = "Desculpe, não temos essa pizza no cardápio.";
+          console.log(responseMessage);
+          return handleCloseResponse(event, 'Fulfilled', responseMessage);
+        }
+      } else {
+        console.log("Solicitando o tipo de pizza...");
+        return handleElicitSlotResponse(event, 'PizzaType', 'Que sabor de pizza você gostaria de pedir?');
+      }
 
-  // Validação do tamanho da pizza
-  if (!pizzaSize) {
-    return handleElicitSlotResponse(event, 'PizzaSize', 'Entendi, qual o tamanho de pizza você prefere?');
-  }
+      // Verificação do tamanho da pizza
+      if (PizzaSize) {
+        let pizzaSizeSlot = PizzaSize.value ? PizzaSize.value.originalValue.toLowerCase().trim() : null;
+        console.log("PizzaSize recebido:", pizzaSizeSlot);
 
-  if (validSizes.includes(pizzaSize.toLowerCase())) {
-    responseMessage += ` Tamanho ${pizzaSize} recebido.`;
-  } else {
-    responseMessage = "Desculpe, o tamanho fornecido não é válido. Por favor, escolha entre grande, média, pequena, p, m e g.";
-    return handleCloseResponse(event, 'Fulfilled', responseMessage);
-  }
-
-  // Se o endereço de entrega estiver presente, finalize o pedido
-  if (deliveryAddress) {
-    const orderId = `order-${Date.now()}`;
-    const order = {
-      orderId: orderId,
-      pizzaType: pizzaType,
-      pizzaSize: pizzaSize,
-      deliveryAddress: deliveryAddress,
-      timestamp: new Date().toISOString(),
-    };
-
-    responseMessage = `Seu pedido de pizza ${pizzaType} ${pizzaSize} foi recebido. O endereço de entrega é ${deliveryAddress}.`;
-    return handleCloseResponse(event, 'Fulfilled', responseMessage);
-  }
-
-  // Solicitar o endereço de entrega
-  return handleElicitSlotResponse(event, 'DeliveryAddress', 'Pedido realizado com sucesso. Me informe seu endereço de entrega.');
-};
-
-// Handler principal
-export const handler = async (event) => {
-  try {
-    console.log('Evento recebido no handler:', JSON.stringify(event, null, 2));
-    const intentName = event.sessionState?.intent?.name;
-
-    if (intentName === 'OrderPizzaIntent') {
-      return await handleOrderPizzaIntent(event);
+        if (pizzaSizeSlot && validSizes.includes(pizzaSizeSlot)) {
+          responseMessage += `Tamanho escolhido: ${pizzaSizeSlot}. `;
+        } else {
+          responseMessage = "Desculpe, não temos esse tamanho no cardápio.";
+          console.log(responseMessage);
+          return handleCloseResponse(event, 'Fulfilled', responseMessage);
+        }
+      } else {
+        console.log("Solicitando o tamanho da pizza...");
+        return handleElicitSlotResponse(event, 'PizzaSize', 'Entendi, qual o tamanho de pizza você prefere?');
+      }
+    } else {
+      responseMessage = "Houve um problema ao processar sua solicitação.";
+      console.log(responseMessage);
     }
 
-    throw new Error(`Intent não suportada: ${intentName}`);
+    console.log("Mensagem de resposta final:", responseMessage);
+    return handleCloseResponse(event, 'Fulfilled', responseMessage);
   } catch (error) {
-    console.error(error);
-    return handleCloseResponse(event, 'Failed', 'Desculpe, ocorreu um erro ao processar seu pedido.');
+    console.error('Erro ao processar a intenção de pedido de pizza:', error);
+    return handleCloseResponse(event, 'Failed', 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
   }
 };
