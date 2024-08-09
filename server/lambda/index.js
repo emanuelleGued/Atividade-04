@@ -5,7 +5,12 @@ import { handleOrderPizzaIntent } from './controllers/order-pizza.js';
 import { handleWelcomeIntent } from './controllers/welcome.js';
 
 export const handler = async (event) => {
-  // Encontra a interpretação com a maior confiança acima do minimo de 0.85
+  // Verifica se `interpretations` existe e é um array
+  if (!event.interpretations || !Array.isArray(event.interpretations)) {
+    return await handleFallbackIntent(event);
+  }
+
+  // Encontra a interpretação com a maior confiança acima do mínimo de 0.85
   const highConfidenceInterpretation = event.interpretations.find(
     interpretation => interpretation.nluConfidence && interpretation.nluConfidence >= 0.85
   );
