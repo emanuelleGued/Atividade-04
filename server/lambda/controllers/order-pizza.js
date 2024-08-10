@@ -26,14 +26,17 @@ export const handleOrderPizzaIntent = async (event) => {
     if (event.sessionState && event.sessionState.intent && event.sessionState.intent.slots) {
       console.log("Processando os slots...");
 
-      const { PizzaType, PizzaSize } = event.sessionState.intent.slots;
+      const { PizzaType, PizzaSize, DeliveryAddress, NumberAdress } = event.sessionState.intent.slots;
 
       // Verificação do tipo de pizza
-      if (PizzaType) {
-        let pizzaTypeSlot = PizzaType.value ? PizzaType.value.originalValue.toLowerCase().trim() : null;
+      if (!PizzaType || !PizzaType.value) {
+        console.log("Solicitando o tipo de pizza...");
+        return handleElicitSlotResponse(event, 'PizzaType', 'Que sabor de pizza você gostaria de pedir?');
+      } else {
+        let pizzaTypeSlot = PizzaType.value.originalValue.toLowerCase().trim();
         console.log("PizzaType recebido:", pizzaTypeSlot);
 
-        if (pizzaTypeSlot && menuDetails.includes(pizzaTypeSlot)) {
+        if (menuDetails.includes(pizzaTypeSlot)) {
           responseMessage = `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
           console.log("Tipo de pizza válido adicionado à mensagem.");
         } else {
@@ -41,17 +44,17 @@ export const handleOrderPizzaIntent = async (event) => {
           console.log(responseMessage);
           return handleCloseResponse(event, 'Fulfilled', responseMessage);
         }
-      } else {
-        console.log("Solicitando o tipo de pizza...");
-        return handleElicitSlotResponse(event, 'PizzaType', 'Que sabor de pizza você gostaria de pedir?');
       }
 
       // Verificação do tamanho da pizza
-      if (PizzaSize) {
-        let pizzaSizeSlot = PizzaSize.value ? PizzaSize.value.originalValue.toLowerCase().trim() : null;
+      if (!PizzaSize || !PizzaSize.value) {
+        console.log("Solicitando o tamanho da pizza...");
+        return handleElicitSlotResponse(event, 'PizzaSize', 'Entendi, qual o tamanho de pizza você prefere?');
+      } else {
+        let pizzaSizeSlot = PizzaSize.value.originalValue.toLowerCase().trim();
         console.log("PizzaSize recebido:", pizzaSizeSlot);
 
-        if (pizzaSizeSlot && validSizes.includes(pizzaSizeSlot)) {
+        if (validSizes.includes(pizzaSizeSlot)) {
           responseMessage += `Tamanho escolhido: ${pizzaSizeSlot}. `;
           console.log("Tamanho da pizza válido adicionado à mensagem.");
         } else {
@@ -59,10 +62,28 @@ export const handleOrderPizzaIntent = async (event) => {
           console.log(responseMessage);
           return handleCloseResponse(event, 'Fulfilled', responseMessage);
         }
-      } else {
-        console.log("Solicitando o tamanho da pizza...");
-        return handleElicitSlotResponse(event, 'PizzaSize', 'Entendi, qual o tamanho de pizza você prefere?');
       }
+
+      // Verificação do endereço de entrega
+      if (!DeliveryAddress || !DeliveryAddress.value) {
+        console.log("Solicitando o endereço de entrega...");
+        return handleElicitSlotResponse(event, 'DeliveryAddress', 'Por favor, informe o endereço de entrega.');
+      } else {
+        let deliveryAddress = DeliveryAddress.value.originalValue.trim();
+        responseMessage += `Endereço de entrega: ${deliveryAddress}. `;
+        console.log("Endereço de entrega adicionado à mensagem.");
+      }
+
+      // Verificação do número da casa
+      if (!NumberAdress || !NumberAdress.value) {
+        console.log("Solicitando o número da casa...");
+        return handleElicitSlotResponse(event, 'NumberAdress', 'Por favor, informe o número da casa.');
+      } else {
+        let numberAdress = NumberAdress.value.originalValue.trim();
+        responseMessage += `Número: ${numberAdress}. `;
+        console.log("Número da casa adicionado à mensagem.");
+      }
+
     } else {
       responseMessage = "Houve um problema ao processar sua solicitação.";
       console.log(responseMessage);
