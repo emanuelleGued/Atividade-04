@@ -5,6 +5,11 @@ import boto3
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 from utils.convert_text_to_speech import convert_text_to_speech_and_upload
+import logging
+
+# Configuração do logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 load_dotenv()
 
@@ -15,17 +20,19 @@ table_name = os.getenv("DYNAMODB_TABLE")
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(table_name)
 
-
 def lambda_handler(event, context):
+    logger.info("Lambda handler iniciado")
+    logger.info(f"Evento recebido: {json.dumps(event)}")
+
     try:
-        body = json.loads(event["body"])
+        body = json.loads(event.get("body", "{}"))
         # Verifica se o evento é uma verificação de URL do Slack
         if body.get("type") == "url_verification":
-            response = {
+            logger.info("Verificação de URL do Slack recebida")
+            return {
                 "statusCode": 200,
                 "body": json.dumps({"response": body.get("challenge")}),
             }
-            return response
 
         # Verifica se o evento é uma requisição para o TTS
         if body.get("phrase"):
@@ -34,33 +41,43 @@ def lambda_handler(event, context):
             raise ValueError("Phrase is required in the body of the request.")
 
     except ValueError as e:
-        response = {"statusCode": 400, "body": json.dumps({"message": str(e)})}
-        return response
+        logger.error(f"Erro de validação: {str(e)}", exc_info=True)
+        return {
+            "statusCode": 400,
+            "body": json.dumps({"message": str(e)}),
+        }
 
     except Exception as e:
-        response = {
+        logger.error(f"Erro inesperado: {str(e)}", exc_info=True)
+        return {
             "statusCode": 500,
             "body": json.dumps({"message": "Internal server error", "error": str(e)}),
         }
-        return response
-
 
 def v1_tts(event, context):
+    logger.info("Processando requisição TTS")
+    
     try:
         # Extrair o corpo da requisição
-        body = json.loads(event["body"])
+        body = json.loads(event.get("body", "{}"))
         phrase = body.get("phrase")
+
+        if not isinstance(phrase, str):
+            raise ValueError("The 'phrase' must be a string.")
 
         # Gerar um hash único para a frase
         hash_id = hashlib.md5(phrase.encode("utf-8")).hexdigest()
+        logger.info(f"Hash gerado: {hash_id}")
 
         # Verificar se o hash já existe no DynamoDB
         response = table.get_item(Key={"id": hash_id})
         if "Item" in response:
+            logger.info("Hash encontrado no DynamoDB")
             # Se o hash já existir, retornar a URL do áudio
             audio_url = response["Item"]["audio_url"]
             body = {"message": "Audio already generated.", "audio_url": audio_url}
         else:
+            logger.info("Hash não encontrado, gerando novo áudio")
             # Se o hash não existir, converter a frase em áudio e salvar a referência no DynamoDB
             audio_url = convert_text_to_speech_and_upload(phrase, hash_id)
 
@@ -71,12 +88,22 @@ def v1_tts(event, context):
 
             body = {"message": "Audio generated and saved.", "audio_url": audio_url}
 
-        response = {"statusCode": 200, "body": json.dumps(body)}
+        logger.info("Requisição TTS processada com sucesso")
+        return {
+            "statusCode": 200,
+            "body": json.dumps(body)
+        }
 
     except ClientError as e:
-        response = {
+        logger.error(f"Erro do DynamoDB: {str(e)}", exc_info=True)
+        return {
             "statusCode": 500,
             "body": json.dumps({"message": "DynamoDB error", "error": str(e)}),
         }
 
-    return response
+    except Exception as e:
+        logger.error(f"Erro ao gerar e fazer upload do áudio: {str(e)}", exc_info=True)
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"message": "Error generating and uploading audio", "error": str(e)}),
+        }
