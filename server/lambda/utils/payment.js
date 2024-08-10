@@ -1,6 +1,6 @@
 import Pizzas from './Pizzas.json' assert { type: 'json' };
 
-export const handleGetPizzaPrice = (pizzaTypeSlot, pizzaSizeSlot) => {
+export const handleGetPizzaPrice = (pizzaTypeSlot , pizzaSizeSlot ) => {
 
 try {
     console.log("Iniciando busca pela pizza...");
@@ -11,12 +11,10 @@ try {
     // Iterate over the list of pizzas
     for (let i in pizzas) {
         let pizza = pizzas[i];
-        
         // Compare the pizza type (Nome)
         if (pizza.Nome === pizzaTypeSlot) {
             // If the pizza type matches, check the size
             let price = pizza.Tamanho[pizzaSizeSlot];
-            
             if (price !== undefined) {
                 return `Pizza encontrada: ${pizza.Nome} (${pizzaSizeSlot}) - R$ ${price}`;
             } else {
@@ -29,4 +27,3 @@ try {
     // Handle errors
     console.error('Erro ao buscar dados:', error);
     }};
-

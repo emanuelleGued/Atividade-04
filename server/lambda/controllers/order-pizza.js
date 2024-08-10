@@ -1,6 +1,7 @@
 import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
 import { api } from '../lib/api.js';
 import { handleGetPizzaPrice } from '../utils/payment.js';
+import Pizzas from '../utils/Pizzas.json' assert { type: 'json' };
 
 export const handleOrderPizzaIntent = async (event) => {
   let responseMessage = "";
@@ -82,11 +83,30 @@ export const handleOrderPizzaIntent = async (event) => {
       return handleElicitSlotResponse(event, 'NumberAdress', 'Qual é o número do endereço?');
     }
 
-    console.log("Frase principal extraída:", responseMessage);
     
-    console.log(pizzaTypeSlot);
-    console.log(pizzaSizeSlot);
-    //handleGetPizzaPrice(pizzaTypeSlot,pizzaSizeSlot);
+    // Access the list of pizzas
+    const pizzas = Pizzas.Pizzas;
+
+    const pizzaTypeSlots = event.sessionState.intent.slots.PizzaType.value.resolvedValues[0]?.toLowerCase().trim();
+    const pizzaSizeSlots = event.sessionState.intent.slots.PizzaSize.value.resolvedValues[0]?.toLowerCase().trim();    ;
+    // Iterate over the list of pizzas
+    for (let i in pizzas) {
+        let pizza = pizzas[i];
+        // Compare the pizza type (Nome)
+        if (pizza.Nome === pizzaTypeSlots) {
+            // If the pizza type matches, check the size
+            let price = pizza.Tamanho[pizzaSizeSlots];
+            if (price !== undefined) {
+                responseMessage += `Preço: ${price} Reais. `;
+                console.log(`Pizza encontrada: ${pizza.Nome} (${pizzaSizeSlots}) - ${price} Reais`);
+            } else {
+                console.log( `Tamanho ${pizzaSizeSlots} não encontrado para a pizza ${pizza.Nome}`);
+            }
+            break; // Exit the loop once the pizza is found
+        }
+    }
+
+    console.log("Frase principal extraída:", responseMessage);
 
     // Chamar a API de TTS para gerar o áudio
     try {

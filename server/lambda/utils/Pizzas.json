@@ -15,7 +15,7 @@
         "grande": 42
     }},
     {
-    "Nome": "Calabresa",
+    "Nome": "calabresa",
     "Tamanho":{
         "pequena": 24,
         "média": 34,
@@ -29,14 +29,14 @@
         "grande": 46
     }},
     {
-    "Nome": "Churrasco",
+    "Nome": "churrasco",
     "Tamanho":{
-        "Pequena": 28,
-        "Média": 38,
-        "Grande": 48
+        "pequena": 28,
+        "média": 38,
+        "grande": 48
     }},
     {
-    "Nome": "Portuguesa",
+    "Nome": "portuguesa",
     "Tamanho":{
         "Pequena": 30,
         "Média": 40,
