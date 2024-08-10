@@ -21,6 +21,10 @@ def detect_language(text):
 
 def convert_text_to_speech_and_upload(phrase, hash_id):
     try:
+        # Certifique-se de que 'phrase' é uma string
+        if not isinstance(phrase, str):
+            raise ValueError("O parâmetro 'phrase' deve ser uma string.")
+
         # Detectar o idioma do texto
         language_code = detect_language(phrase)
 
@@ -30,9 +34,7 @@ def convert_text_to_speech_and_upload(phrase, hash_id):
             "pt": "Camila",  # Português
         }
 
-        voice_id = voice_id_map.get(
-            language_code, "Joanna"
-        )  # Padrão para inglês se não encontrado
+        voice_id = voice_id_map.get(language_code, "Joanna")
 
         # Converter texto em áudio usando Amazon Polly com SSML
         ssml_text = f'<speak><lang xml:lang="{language_code}">{phrase}</lang></speak>'
@@ -41,11 +43,13 @@ def convert_text_to_speech_and_upload(phrase, hash_id):
             TextType="ssml", Text=ssml_text, OutputFormat="mp3", VoiceId=voice_id
         )
 
+        # Verifique se o campo 'AudioStream' está na resposta
+        if 'AudioStream' not in response:
+            raise Exception("Erro ao gerar áudio: 'AudioStream' não encontrado na resposta.")
+
         # Salvar o áudio no S3
-        audio_file = "{}.mp3".format(hash_id)
-        s3.put_object(
-            Bucket=BUCKET_NAME, Key=audio_file, Body=response["AudioStream"].read()
-        )
+        audio_file = f"{hash_id}.mp3"
+        s3.put_object(Bucket=BUCKET_NAME, Key=audio_file, Body=response["AudioStream"].read())
 
         # Gerar a URL do áudio
         audio_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{audio_file}"
