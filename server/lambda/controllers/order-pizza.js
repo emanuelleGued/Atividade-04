@@ -1,5 +1,6 @@
 import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
 import { api } from '../lib/api.js';
+import { handleGetPizzaPrice } from '../utils/payment.js';
 
 export const handleOrderPizzaIntent = async (event) => {
   let responseMessage = "";
@@ -82,6 +83,10 @@ export const handleOrderPizzaIntent = async (event) => {
     }
 
     console.log("Frase principal extraída:", responseMessage);
+    
+    console.log(pizzaTypeSlot);
+    console.log(pizzaSizeSlot);
+    //handleGetPizzaPrice(pizzaTypeSlot,pizzaSizeSlot);
 
     // Chamar a API de TTS para gerar o áudio
     try {
