@@ -1,92 +1,84 @@
 import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
 import { api } from '../lib/api.js';
 
-const validSizes = ['grande', 'media', 'pequena', 'p', 'm', 'g'];
-
-// Definição do cardápio para consulta
-const menuDetails = [
-  'margherita',
-  'pepperoni',
-  'calabresa',
-  'frango com catupiry',
-  'churrasco',
-  'portuguesa',
-  'napolitana',
-  'toscana',
-  'vegetariana',
-  'quatro queijos'
-];
-
 export const handleOrderPizzaIntent = async (event) => {
   let responseMessage = "";
 
   try {
     console.log("Evento recebido:", JSON.stringify(event, null, 2));
 
-    if (event.sessionState && event.sessionState.intent && event.sessionState.intent.slots) {
-      console.log("Processando os slots...");
+    const { PizzaType, PizzaSize, DeliveryAddress, NumberAdress } = event.sessionState.intent.slots;
 
-      const { PizzaType, PizzaSize, DeliveryAddress, NumberAdress } = event.sessionState.intent.slots;
+    // Verificação do tipo de pizza
+    if (PizzaType && PizzaType.value) {
+      let pizzaTypeSlot = PizzaType.value.resolvedValues[0]?.toLowerCase().trim();
+      console.log("PizzaType recebido:", pizzaTypeSlot);
 
-      // Verificação do tipo de pizza
-      if (!PizzaType || !PizzaType.value) {
-        console.log("Solicitando o tipo de pizza...");
-        return handleElicitSlotResponse(event, 'PizzaType', 'Que sabor de pizza você gostaria de pedir?');
+      if (pizzaTypeSlot) {
+        responseMessage = `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
+        console.log("Tipo de pizza válido adicionado à mensagem.");
       } else {
-        let pizzaTypeSlot = PizzaType.value.originalValue.toLowerCase().trim();
-        console.log("PizzaType recebido:", pizzaTypeSlot);
-
-        if (menuDetails.includes(pizzaTypeSlot)) {
-          responseMessage = `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
-          console.log("Tipo de pizza válido adicionado à mensagem.");
-        } else {
-          responseMessage = "Desculpe, não temos essa pizza no cardápio.";
-          console.log(responseMessage);
-          return handleCloseResponse(event, 'Fulfilled', responseMessage);
-        }
+        responseMessage = "Desculpe, não temos essa pizza no cardápio.";
+        console.log(responseMessage);
+        return handleCloseResponse(event, 'Fulfilled', responseMessage);
       }
-
-      // Verificação do tamanho da pizza
-      if (!PizzaSize || !PizzaSize.value) {
-        console.log("Solicitando o tamanho da pizza...");
-        return handleElicitSlotResponse(event, 'PizzaSize', 'Entendi, qual o tamanho de pizza você prefere?');
-      } else {
-        let pizzaSizeSlot = PizzaSize.value.originalValue.toLowerCase().trim();
-        console.log("PizzaSize recebido:", pizzaSizeSlot);
-
-        if (validSizes.includes(pizzaSizeSlot)) {
-          responseMessage += `Tamanho escolhido: ${pizzaSizeSlot}. `;
-          console.log("Tamanho da pizza válido adicionado à mensagem.");
-        } else {
-          responseMessage = "Desculpe, não temos esse tamanho no cardápio.";
-          console.log(responseMessage);
-          return handleCloseResponse(event, 'Fulfilled', responseMessage);
-        }
-      }
-
-      // Verificação do endereço de entrega
-      if (!DeliveryAddress || !DeliveryAddress.value) {
-        console.log("Solicitando o endereço de entrega...");
-        return handleElicitSlotResponse(event, 'DeliveryAddress', 'Por favor, informe o endereço de entrega.');
-      } else {
-        let deliveryAddress = DeliveryAddress.value.originalValue.trim();
-        responseMessage += `Endereço de entrega: ${deliveryAddress}. `;
-        console.log("Endereço de entrega adicionado à mensagem.");
-      }
-
-      // Verificação do número da casa
-      if (!NumberAdress || !NumberAdress.value) {
-        console.log("Solicitando o número da casa...");
-        return handleElicitSlotResponse(event, 'NumberAdress', 'Por favor, informe o número da casa.');
-      } else {
-        let numberAdress = NumberAdress.value.originalValue.trim();
-        responseMessage += `Número: ${numberAdress}. `;
-        console.log("Número da casa adicionado à mensagem.");
-      }
-
     } else {
-      responseMessage = "Houve um problema ao processar sua solicitação.";
-      console.log(responseMessage);
+      console.log("Solicitando o tipo de pizza...");
+      return handleElicitSlotResponse(event, 'PizzaType', 'Que sabor de pizza você gostaria de pedir?');
+    }
+
+    // Verificação do tamanho da pizza
+    if (PizzaSize && PizzaSize.value) {
+      let pizzaSizeSlot = PizzaSize.value.resolvedValues[0]?.toLowerCase().trim();
+      console.log("PizzaSize recebido:", pizzaSizeSlot);
+
+      if (pizzaSizeSlot) {
+        responseMessage += `Tamanho escolhido: ${pizzaSizeSlot}. `;
+        console.log("Tamanho da pizza válido adicionado à mensagem.");
+      } else {
+        responseMessage = "Desculpe, não temos esse tamanho no cardápio.";
+        console.log(responseMessage);
+        return handleCloseResponse(event, 'Fulfilled', responseMessage);
+      }
+    } else {
+      console.log("Solicitando o tamanho da pizza...");
+      return handleElicitSlotResponse(event, 'PizzaSize', 'Entendi, qual o tamanho de pizza você prefere?');
+    }
+
+    // Verificação do endereço de entrega
+    if (DeliveryAddress && DeliveryAddress.value) {
+      let deliveryAddressSlot = DeliveryAddress.value.originalValue.trim();
+      console.log("DeliveryAddress recebido:", deliveryAddressSlot);
+
+      if (deliveryAddressSlot) {
+        responseMessage += `Endereço de entrega: ${deliveryAddressSlot}. `;
+        console.log("Endereço de entrega válido adicionado à mensagem.");
+      } else {
+        responseMessage = "Desculpe, não consegui entender o endereço de entrega.";
+        console.log(responseMessage);
+        return handleCloseResponse(event, 'Fulfilled', responseMessage);
+      }
+    } else {
+      console.log("Solicitando o endereço de entrega...");
+      return handleElicitSlotResponse(event, 'DeliveryAddress', 'Qual é o endereço de entrega?');
+    }
+
+    // Verificação do número do endereço
+    if (NumberAdress && NumberAdress.value) {
+      let numberAdressSlot = NumberAdress.value.originalValue.trim();
+      console.log("NumberAdress recebido:", numberAdressSlot);
+
+      if (numberAdressSlot) {
+        responseMessage += `Número: ${numberAdressSlot}. `;
+        console.log("Número do endereço válido adicionado à mensagem.");
+      } else {
+        responseMessage = "Desculpe, não consegui entender o número do endereço.";
+        console.log(responseMessage);
+        return handleCloseResponse(event, 'Fulfilled', responseMessage);
+      }
+    } else {
+      console.log("Solicitando o número do endereço...");
+      return handleElicitSlotResponse(event, 'NumberAdress', 'Qual é o número do endereço?');
     }
 
     console.log("Frase principal extraída:", responseMessage);
