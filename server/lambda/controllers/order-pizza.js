@@ -1,4 +1,5 @@
 import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
+import { api } from '../lib/api.js';
 
 const validSizes = ['grande', 'media', 'pequena', 'p', 'm', 'g'];
 
@@ -23,6 +24,8 @@ export const handleOrderPizzaIntent = async (event) => {
     console.log("Evento recebido:", JSON.stringify(event, null, 2));
 
     if (event.sessionState && event.sessionState.intent && event.sessionState.intent.slots) {
+      console.log("Processando os slots...");
+
       const { PizzaType, PizzaSize } = event.sessionState.intent.slots;
 
       // Verificação do tipo de pizza
@@ -31,7 +34,8 @@ export const handleOrderPizzaIntent = async (event) => {
         console.log("PizzaType recebido:", pizzaTypeSlot);
 
         if (pizzaTypeSlot && menuDetails.includes(pizzaTypeSlot)) {
-          responseMessage += `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
+          responseMessage = `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
+          console.log("Tipo de pizza válido adicionado à mensagem.");
         } else {
           responseMessage = "Desculpe, não temos essa pizza no cardápio.";
           console.log(responseMessage);
@@ -49,6 +53,7 @@ export const handleOrderPizzaIntent = async (event) => {
 
         if (pizzaSizeSlot && validSizes.includes(pizzaSizeSlot)) {
           responseMessage += `Tamanho escolhido: ${pizzaSizeSlot}. `;
+          console.log("Tamanho da pizza válido adicionado à mensagem.");
         } else {
           responseMessage = "Desculpe, não temos esse tamanho no cardápio.";
           console.log(responseMessage);
@@ -63,10 +68,79 @@ export const handleOrderPizzaIntent = async (event) => {
       console.log(responseMessage);
     }
 
-    console.log("Mensagem de resposta final:", responseMessage);
-    return handleCloseResponse(event, 'Fulfilled', responseMessage);
+    console.log("Frase principal extraída:", responseMessage);
+
+    // Chamar a API de TTS para gerar o áudio
+    try {
+      const payload = {
+        phrase: responseMessage,
+      };
+      console.log("Payload enviado para a API de TTS:", payload);
+
+      const ttsResponse = await api.post('/v1/tts', payload);
+      const audioUrl = ttsResponse.data.audio_url;
+
+      // Retornar a mensagem original e o link do áudio
+      return {
+        sessionState: {
+          dialogAction: {
+            type: 'Close',
+          },
+          intent: {
+            name: event.sessionState.intent.name,
+            state: 'Fulfilled',
+          },
+        },
+        messages: [
+          {
+            contentType: 'PlainText',
+            content: responseMessage,
+          },
+          {
+            contentType: 'PlainText',
+            content: `Aqui está o áudio da sua resposta: ${audioUrl}`,
+          },
+        ],
+      };
+    } catch (error) {
+      console.error('Erro ao chamar a API de TTS:', error);
+      return {
+        sessionState: {
+          dialogAction: {
+            type: 'Close',
+          },
+          intent: {
+            name: event.sessionState.intent.name,
+            state: 'Failed',
+          },
+        },
+        messages: [
+          {
+            contentType: 'PlainText',
+            content: 'Houve um problema ao gerar o áudio da resposta.',
+          },
+        ],
+      };
+    }
+
   } catch (error) {
     console.error('Erro ao processar a intenção de pedido de pizza:', error);
-    return handleCloseResponse(event, 'Failed', 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
+    return {
+      sessionState: {
+        dialogAction: {
+          type: 'Close',
+        },
+        intent: {
+          name: event.sessionState.intent.name,
+          state: 'Failed',
+        },
+      },
+      messages: [
+        {
+          contentType: 'PlainText',
+          content: 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.',
+        },
+      ],
+    };
   }
 };
