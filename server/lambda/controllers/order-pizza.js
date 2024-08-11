@@ -116,7 +116,7 @@ export const handleOrderPizzaIntent = async (event) => {
       console.log("Payload enviado para a API de TTS:", payload);
 
       const ttsResponse = await api.post('/v1/tts', payload);
-      const audioUrl = ttsResponse.data.audio_url;
+      const audioUrl = ttsResponse.data.url_to_audio;
 
       // Retornar a mensagem original e o link do áudio
       return {

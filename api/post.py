@@ -1,3 +1,4 @@
+import datetime
 import os
 import hashlib
 import json
@@ -56,7 +57,7 @@ def lambda_handler(event, context):
 
 def v1_tts(event, context):
     logger.info("Processando requisição TTS")
-    
+
     try:
         # Extrair o corpo da requisição
         body = json.loads(event.get("body", "{}"))
@@ -75,7 +76,15 @@ def v1_tts(event, context):
             logger.info("Hash encontrado no DynamoDB")
             # Se o hash já existir, retornar a URL do áudio
             audio_url = response["Item"]["audio_url"]
-            body = {"message": "Audio already generated.", "audio_url": audio_url}
+            body = {
+                "received_phrase": phrase,
+                "url_to_audio": audio_url,
+                "created_audio": table.get_item(Key={"id": hash_id})["Item"][
+                    "created_at"
+                ],
+                "unique_id": hash_id,
+            }
+
         else:
             logger.info("Hash não encontrado, gerando novo áudio")
             # Se o hash não existir, converter a frase em áudio e salvar a referência no DynamoDB
@@ -83,10 +92,17 @@ def v1_tts(event, context):
 
             # Salvar o novo item no DynamoDB
             table.put_item(
-                Item={"id": hash_id, "phrase": phrase, "audio_url": audio_url}
+                Item={"id": hash_id, "phrase": phrase, "audio_url": audio_url, "created_at": str(datetime.datetime.now())}
             )
 
-            body = {"message": "Audio generated and saved.", "audio_url": audio_url}
+            body = {
+                "received_phrase": phrase,
+                "url_to_audio": audio_url,
+                "created_audio": table.get_item(Key={"id": hash_id})["Item"][
+                    "created_at"
+                ],
+                "unique_id": hash_id,
+            }
 
         logger.info("Requisição TTS processada com sucesso")
         return {
