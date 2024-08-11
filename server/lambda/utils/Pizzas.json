@@ -38,43 +38,43 @@
     {
     "Nome": "portuguesa",
     "Tamanho":{
-        "Pequena": 30,
-        "Média": 40,
-        "Grande": 50
+        "pequena": 30,
+        "média": 40,
+        "grande": 50
     }},
     {
-    "Nome": "Marguerita",
+    "Nome": "marguerita",
     "Tamanho":{
-        "Pequena": 20,
-        "Média": 30,
-        "Grande": 40
+        "pequena": 20,
+        "média": 30,
+        "grande": 40
     }},
     {
-    "Nome": "Napolitana",
+    "Nome": "napolitana",
     "Tamanho":{
-        "Pequena": 22,
-        "Média": 32,
-        "Grande": 42
+        "pequena": 22,
+        "média": 32,
+        "grande": 42
     }},
     {
-    "Nome": "Toscana",
+    "Nome": "toscana",
     "Tamanho":{
-        "Pequena": 24,
-        "Média": 34,
-        "Grande": 44
+        "pequena": 24,
+        "média": 34,
+        "grande": 44
     }},
     {
-    "Nome": "Vegetariana",
+    "Nome": "vegetariana",
     "Tamanho":{
-        "Pequena": 26,
-        "Média": 36,
-        "Grande": 46
+        "pequena": 26,
+        "média": 36,
+        "grande": 46
     }},
     {
-    "Nome": "Quatro Queijos",
+    "Nome": "quatro queijos",
     "Tamanho":{
-        "Pequena": 30,
-        "Média": 36,
-        "Grande": 40
+        "pequena": 30,
+        "média": 36,
+        "grande": 40
 }}]
 }
