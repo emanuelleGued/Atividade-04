@@ -15,7 +15,7 @@ O projeto Pizza D'Italy Bot foi desenvolvido como parte das sprints 6 e 7 do pro
   - [Passos para executar o chatbot no Lex e o backend no Lambda](#passos-para-executar-o-chatbot-no-lex-e-o-backend-no-lambda)
 - [🧱 Estrutura do Projeto](#-estrutura-do-projeto)
 - [🚧 Desafios e Soluções](#-desafios-e-soluções)
-- [🌐 Acesso ao chatbot](#-acesso-ao-chatbot)
+- [💬 Acesso ao chatbot](#-acesso-ao-chatbot)
 - [👥 Contribuidores](#-contribuidores)
 
 ## 🏛️ Arquitetura
