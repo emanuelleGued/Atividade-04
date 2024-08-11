@@ -43,7 +43,42 @@ O chatbot segue a arquitetura do diagrama simples abaixo onde o actor usa o cana
 
 ## 🔎 Sobre o Chatbot
 
-...
+Este projeto é um chatbot desenvolvido para auxiliar os clientes de uma pizzaria a realizarem pedidos, verificar o cardápio, obter detalhes sobre os sabores disponíveis, e mais. O chatbot foi implementado usando o Amazon Lex e possui cinco intents principais para lidar com as interações dos usuários.
+
+## 🤖 Intents do Chatbot
+
+### 1. **WelcomeIntent**
+   - **Descrição:** A `WelcomeIntent` é a intent responsável por cumprimentar o usuário e iniciar a interação. Quando o usuário inicia uma conversa com o chatbot, essa intent é ativada para oferecer uma mensagem de boas-vindas e orientar o usuário sobre o que o bot pode fazer.
+   - **Exemplos de frases:**
+     - "Olá"
+     - "Oi"
+     - "Bom dia"
+     - "Boa tarde"
+
+### 2. **GetMenuIntent**
+   - **Descrição:** A `GetMenuIntent` permite que o usuário visualize o cardápio completo da pizzaria. Ao solicitar o menu, o bot responde com uma lista de todas as pizzas disponíveis, juntamente com seus preços e tamanhos.
+   - **Exemplos de frases:**
+     - "Quero ver o cardápio"
+     - "Me mostre o menu"
+     - "O que vocês têm no cardápio?"
+     - "Quais pizzas vocês têm?"
+
+### 3. **GetDetailsOfPizzaIntent**
+   - **Descrição:** A `GetDetailsOfPizzaIntent` é ativada quando o usuário deseja obter informações detalhadas sobre um sabor específico de pizza. 
+   - **Exemplos de frases:**
+     - "Quais os ingredientes da pizza Marguerita?"
+     - "Me fale mais sobre a pizza Calabresa"
+
+### 4. **OrderPizzaIntent**
+   - **Descrição:** A `OrderPizzaIntent` permite que o usuário faça um pedido de pizza. O bot irá perguntar o sabor, o tamanho e o endereço de entrega. Se o sabor ou tamanho não for especificado inicialmente, o bot irá solicitar essas informações ao usuário.
+   - **Exemplos de frases:**
+     - "Eu gostaria de uma pizza"
+     - "Gostaria de pedir uma pizza"
+     - "Quero uma pizza de Calabresa grande"
+     - "Quero fazer um pedido"
+
+### 5. **FallbackIntent**
+   - **Descrição:** A `FallbackIntent` é a intent padrão que é ativada quando o chatbot não consegue entender a solicitação do usuário ou quando nenhuma das outras intents é adequada para a entrada dada. Esta intent fornece uma mensagem de erro amigável e sugere ao usuário tentar novamente ou reformular sua pergunta.
 
 ## 🚀 Execução e Utilização
 
@@ -209,7 +244,17 @@ zip node_modules,package.json,package-lock.json axios.zip
 
 ## 🚧 Desafios e Soluções
 
-...
+### 1. Confiança Elevada em Intents Inesperadas
+- **Desafio:** O bot estava acionando intents como `WelcomeIntent` com uma confiança alta, mesmo para entradas irrelevantes, como um simples "s". Isso causava comportamentos indesejados no bot, que respondia inadequadamente a entradas que deveriam ter acionado o fallback.
+- **Solução:** Foram revisadas as utterances (frases de treinamento) das intents, adicionando novas frases e refinando as existentes para melhorar a precisão do NLU. Além disso, foram implementados filtros no código para garantir que apenas intents com confiança superior a 0.85 fossem acionadas.
+
+### 2. Fallback Ineficiente
+- **Desafio:** O fallback do bot não estava funcionando conforme o esperado, resultando em respostas inadequadas quando o bot não conseguia entender a entrada do usuário.
+- **Solução:** Foi revisado e corrigido o código do fallback para garantir que qualquer entrada não compreendida pelo bot acionasse corretamente a intent de fallback. Além disso, melhorias foram feitas nas mensagens de fallback para fornecer uma melhor experiência ao usuário.
+
+### 3. Configuração e Estruturação do Projeto
+- **Desafio:** Durante o desenvolvimento, surgiu a necessidade de uma estrutura de projeto clara e organizada, especialmente ao lidar com múltiplas intents e funções de manipulação em Lambda.
+- **Solução:** A estrutura do projeto foi organizada em pastas específicas para os controladores (`controllers`) e utilitários (`utils`), separando as responsabilidades e facilitando a manutenção do código. Além disso, scripts para gerenciamento das branches e commits foram estabelecidos para manter um fluxo de trabalho limpo e eficiente.
 
 ## 💬 Acesso ao Chatbot
 
