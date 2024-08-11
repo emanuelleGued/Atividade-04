@@ -1,13 +1,7 @@
-import { handleCloseResponse } from '../utils/response-builder.js';
-
 export const handleWelcomeIntent = async (event) => {
   const response = {
     sessionState: {
       ...event.sessionState,
-      intent: {
-        name: 'WelcomeIntent',
-        state: 'Fulfilled',
-      },
       dialogAction: {
         type: 'Close',
       },

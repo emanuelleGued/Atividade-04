@@ -1,4 +1,5 @@
-import { handleElicitSlotResponse, handleCloseResponse, generateTTSResponse, handleFinalResponse } from '../utils/response-builder.js';
+import { handleResponse } from '../utils/response-builder.js';
+import { generateTTS } from '../utils/generate-tts.js';
 
 export const handleGetDetailsOfPizzaIntent = async (event) => {
     let responseMessage = "";
@@ -46,7 +47,7 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
                 }
             } else {
                 console.log("Solicitando o tipo de pizza...");
-                return handleElicitSlotResponse(event, 'PizzaType', 'Qual sabor de pizza você gostaria de saber mais?');
+                return handleResponse(event, 'ElicitSlot', 'PizzaType', 'Qual sabor de pizza você gostaria de saber mais?');
             }
         } else {
             responseMessage = "Houve um problema ao processar sua solicitação.";
@@ -57,18 +58,18 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
 
         try {
             // Gerar o áudio utilizando a função de TTS
-            const audioUrl = await generateTTSResponse(responseMessage);
+            const audioUrl = await generateTTS(responseMessage);
 
             // Retornar a resposta final com o áudio
-            return handleFinalResponse(event, 'Fulfilled', responseMessage, audioUrl);
+            return handleResponse(event, 'Close', null, [responseMessage, audioUrl]);
         } catch (error) {
             // Retornar a resposta final em caso de falha na geração do áudio
-            return handleFinalResponse(event, 'Failed', 'Houve um problema ao gerar o áudio da resposta.');
+            return handleResponse(event, 'Failed', null, 'Houve um problema ao gerar o áudio da resposta.');
         }
 
     } catch (error) {
         console.error('Erro ao processar a intenção de pedido de pizza:', error);
         // Retornar a resposta final em caso de erro no processamento
-        return handleCloseResponse(event, 'Failed', 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
+        return handleResponse(event, 'Failed', null, 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
     }
 };

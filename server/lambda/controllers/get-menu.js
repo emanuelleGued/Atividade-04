@@ -1,4 +1,4 @@
-import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
+import { handleResponse } from '../utils/response-builder.js';
 
 export const handleGetMenuIntent = async (event) => {
   const menu = `
@@ -60,5 +60,5 @@ export const handleGetMenuIntent = async (event) => {
   - Grande: R$ 40
   `;
 
-  return handleCloseResponse(event, 'Fulfilled', menu);
+  return handleResponse(event, 'Close', null, menu);
 };

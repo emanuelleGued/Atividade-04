@@ -16,7 +16,7 @@ export const handler = async (event) => {
   );
 
   if (!highConfidenceInterpretation) {
-    return await handleFallbackIntent(event);
+    return handleFallbackIntent(event);
   }
 
   // Processa a intenção correspondente à interpretação de alta confiança
@@ -32,6 +32,6 @@ export const handler = async (event) => {
     case 'OrderPizzaIntent':
       return await handleOrderPizzaIntent(event);
     default:
-      return handleCloseResponse(event, 'Failed', 'Desculpe, não consegui processar a sua solicitação.');
+      return handleResponse(event, 'Failed', 'Desculpe, não consegui processar a sua solicitação.');
   }
 };
