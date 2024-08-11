@@ -1,7 +1,9 @@
-import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
-import { api } from '../lib/api.js';
+import { handleElicitSlotResponse, handleCloseResponse, generateTTSResponse, handleFinalResponse } from '../utils/response-builder.js';
 import { handleGetPizzaPrice } from '../utils/payment.js';
-import Pizzas from '../utils/Pizzas.json' assert { type: 'json' };
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const Pizzas = require('../utils/Pizzas.json');
+
 
 export const handleOrderPizzaIntent = async (event) => {
   let responseMessage = "";
@@ -83,102 +85,45 @@ export const handleOrderPizzaIntent = async (event) => {
       return handleElicitSlotResponse(event, 'NumberAdress', 'Qual é o número do endereço?');
     }
 
-    
+
     // Access the list of pizzas
     const pizzas = Pizzas.Pizzas;
 
     const pizzaTypeSlots = event.sessionState.intent.slots.PizzaType.value.resolvedValues[0]?.toLowerCase().trim();
-    const pizzaSizeSlots = event.sessionState.intent.slots.PizzaSize.value.resolvedValues[0]?.toLowerCase().trim();    ;
+    const pizzaSizeSlots = event.sessionState.intent.slots.PizzaSize.value.resolvedValues[0]?.toLowerCase().trim();;
     // Iterate over the list of pizzas
     for (let i in pizzas) {
-        let pizza = pizzas[i];
-        // Compare the pizza type (Nome)
-        if (pizza.Nome === pizzaTypeSlots) {
-            // If the pizza type matches, check the size
-            let price = pizza.Tamanho[pizzaSizeSlots];
-            if (price !== undefined) {
-                responseMessage += `Preço: ${price} Reais. `;
-                console.log(`Pizza encontrada: ${pizza.Nome} (${pizzaSizeSlots}) - ${price} Reais`);
-            } else {
-                console.log( `Tamanho ${pizzaSizeSlots} não encontrado para a pizza ${pizza.Nome}`);
-            }
-            break; // Exit the loop once the pizza is found
+      let pizza = pizzas[i];
+      // Compare the pizza type (Nome)
+      if (pizza.Nome === pizzaTypeSlots) {
+        // If the pizza type matches, check the size
+        let price = pizza.Tamanho[pizzaSizeSlots];
+        if (price !== undefined) {
+          responseMessage += `Preço: ${price} Reais. `;
+          console.log(`Pizza encontrada: ${pizza.Nome} (${pizzaSizeSlots}) - ${price} Reais`);
+        } else {
+          console.log(`Tamanho ${pizzaSizeSlots} não encontrado para a pizza ${pizza.Nome}`);
         }
+        break; // Exit the loop once the pizza is found
+      }
     }
 
     console.log("Frase principal extraída:", responseMessage);
 
-    // Chamar a API de TTS para gerar o áudio
     try {
-      const payload = {
-        phrase: responseMessage,
-      };
-      console.log("Payload enviado para a API de TTS:", payload);
+      // Gerar o áudio utilizando a função de TTS
+      const audioUrl = await generateTTSResponse(responseMessage);
 
-      const ttsResponse = await api.post('/v1/tts', payload);
-      const audioUrl = ttsResponse.data.url_to_audio;
-
-      // Retornar a mensagem original e o link do áudio
-      return {
-        sessionState: {
-          dialogAction: {
-            type: 'Close',
-          },
-          intent: {
-            name: event.sessionState.intent.name,
-            state: 'Fulfilled',
-          },
-        },
-        messages: [
-          {
-            contentType: 'PlainText',
-            content: responseMessage,
-          },
-          {
-            contentType: 'PlainText',
-            content: `Aqui está o áudio da sua resposta: ${audioUrl}`,
-          },
-        ],
-      };
+      // Retornar a resposta final com o áudio
+      return handleFinalResponse(event, 'Fulfilled', responseMessage, audioUrl);
     } catch (error) {
-      console.error('Erro ao chamar a API de TTS:', error);
-      return {
-        sessionState: {
-          dialogAction: {
-            type: 'Close',
-          },
-          intent: {
-            name: event.sessionState.intent.name,
-            state: 'Failed',
-          },
-        },
-        messages: [
-          {
-            contentType: 'PlainText',
-            content: 'Houve um problema ao gerar o áudio da resposta.',
-          },
-        ],
-      };
+      // Retornar a resposta final em caso de falha na geração do áudio
+      return handleFinalResponse(event, 'Failed', 'Houve um problema ao gerar o áudio da resposta.');
     }
 
   } catch (error) {
     console.error('Erro ao processar a intenção de pedido de pizza:', error);
-    return {
-      sessionState: {
-        dialogAction: {
-          type: 'Close',
-        },
-        intent: {
-          name: event.sessionState.intent.name,
-          state: 'Failed',
-        },
-      },
-      messages: [
-        {
-          contentType: 'PlainText',
-          content: 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.',
-        },
-      ],
-    };
+    // Retornar a resposta final em caso de erro no processamento
+    return handleCloseResponse(event, 'Failed', 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
   }
 };

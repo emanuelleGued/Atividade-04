@@ -1,5 +1,4 @@
-import { handleElicitSlotResponse, handleCloseResponse } from '../utils/response-builder.js';
-import { api } from '../lib/api.js';
+import { handleElicitSlotResponse, handleCloseResponse, generateTTSResponse, handleFinalResponse } from '../utils/response-builder.js';
 
 export const handleGetDetailsOfPizzaIntent = async (event) => {
     let responseMessage = "";
@@ -56,77 +55,20 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
 
         console.log("Frase principal extraída:", responseMessage);
 
-        // Chamar a API de TTS para gerar o áudio
         try {
-            const payload = {
-                phrase: responseMessage,
-            };
-            console.log("Payload enviado para a API de TTS:", payload);
+            // Gerar o áudio utilizando a função de TTS
+            const audioUrl = await generateTTSResponse(responseMessage);
 
-            const ttsResponse = await api.post('/v1/tts', payload);
-            const audioUrl = ttsResponse.data.url_to_audio;
-
-            // Retornar a mensagem original e o link do áudio
-            return {
-                sessionState: {
-                    dialogAction: {
-                        type: 'Close',
-                    },
-                    intent: {
-                        name: event.sessionState.intent.name,
-                        state: 'Fulfilled',
-                    },
-                },
-                messages: [
-                    {
-                        contentType: 'PlainText',
-                        content: responseMessage,
-                    },
-                    {
-                        contentType: 'PlainText',
-                        content: `Aqui está o áudio da sua resposta: ${audioUrl}`,
-                    },
-                ],
-            };
+            // Retornar a resposta final com o áudio
+            return handleFinalResponse(event, 'Fulfilled', responseMessage, audioUrl);
         } catch (error) {
-            console.error('Erro ao chamar a API de TTS:', error);
-            return {
-                sessionState: {
-                    dialogAction: {
-                        type: 'Close',
-                    },
-                    intent: {
-                        name: event.sessionState.intent.name,
-                        state: 'Failed',
-                    },
-                },
-                messages: [
-                    {
-                        contentType: 'PlainText',
-                        content: 'Houve um problema ao gerar o áudio da resposta.',
-                    },
-                ],
-            };
+            // Retornar a resposta final em caso de falha na geração do áudio
+            return handleFinalResponse(event, 'Failed', 'Houve um problema ao gerar o áudio da resposta.');
         }
 
     } catch (error) {
-        console.error('Erro ao processar a intenção de detalhes da pizza:', error);
-        return {
-            sessionState: {
-                dialogAction: {
-                    type: 'Close',
-                },
-                intent: {
-                    name: event.sessionState.intent.name,
-                    state: 'Failed',
-                },
-            },
-            messages: [
-                {
-                    contentType: 'PlainText',
-                    content: 'Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.',
-                },
-            ],
-        };
+        console.error('Erro ao processar a intenção de pedido de pizza:', error);
+        // Retornar a resposta final em caso de erro no processamento
+        return handleCloseResponse(event, 'Failed', 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
     }
 };
