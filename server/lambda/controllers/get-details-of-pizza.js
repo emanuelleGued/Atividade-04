@@ -5,14 +5,12 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
     let responseMessage = "";
 
     try {
-        console.log("Evento recebido:", JSON.stringify(event, null, 2));
 
         if (event.sessionState &&
             event.sessionState.intent &&
             event.sessionState.intent.slots) {
 
             if (event.sessionState.intent.slots.PizzaType) {
-                console.log("Processando o slot PizzaType...");
 
                 const pizzaSlot = event.sessionState.intent.slots.PizzaType;
                 let pizzaTypeSlot = null;
@@ -21,7 +19,6 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
                     pizzaTypeSlot = pizzaSlot.value.originalValue.toLowerCase().trim();
 
                     const menuDetails = {
-                        "margherita": "Ingredientes da Margherita: Tomate, queijo muçarela e manjericão.",
                         "pepperoni": "Ingredientes da Pepperoni: Queijo, molho de tomate e pepperoni.",
                         "calabresa": "Ingredientes da Calabresa: Calabresa, queijo e cebola.",
                         "frango com catupiry": "Ingredientes da Frango com Catupiry: Frango desfiado, catupiry e milho.",
@@ -36,25 +33,18 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
 
                     if (pizzaTypeSlot && menuDetails[pizzaTypeSlot]) {
                         responseMessage = menuDetails[pizzaTypeSlot];
-                        console.log("Mensagem de detalhes da pizza adicionada.");
                     } else {
                         responseMessage = "Desculpe, não temos essa pizza no cardápio.";
-                        console.log(responseMessage);
                     }
                 } else {
                     responseMessage = "Desculpe, não consegui entender o tipo de pizza.";
-                    console.log(responseMessage);
                 }
             } else {
-                console.log("Solicitando o tipo de pizza...");
                 return handleResponse(event, 'ElicitSlot', 'PizzaType', 'Qual sabor de pizza você gostaria de saber mais?');
             }
         } else {
             responseMessage = "Houve um problema ao processar sua solicitação.";
-            console.log(responseMessage);
         }
-
-        console.log("Frase principal extraída:", responseMessage);
 
         try {
             // Gerar o áudio utilizando a função de TTS
@@ -68,7 +58,6 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
         }
 
     } catch (error) {
-        console.error('Erro ao processar a intenção de pedido de pizza:', error);
         // Retornar a resposta final em caso de erro no processamento
         return handleResponse(event, 'Failed', null, 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
     }
