@@ -240,7 +240,60 @@ zip node_modules,package.json,package-lock.json axios.zip
 
 ## 🧱 Estrutura do Projeto
 
-...
+```plaintext
+.
+├── .venv/
+├── api/
+│   ├── utils/
+│   ├── .env.example
+│   ├── handler.py
+│   ├── post.py
+│   ├── package.json
+│   ├── requeriments.txt
+│   ├── serverless.yml
+├── assets/
+├── bot
+├── server
+│   ├── lambda/
+│   |   ├── controllers/
+│   |   ├── lib/
+│   |   ├── utils/
+│   |   ├── index.js
+│   ├── .env.example
+│   ├── package.json
+│   ├── server.js
+```
+
+---
+
+- **.venv/** - Contém as dependências do serverless
+- **api/** - Contém as rotas, esquemas e utilitários da API serverless
+  - **node_modules/** - Contém as dependências do serverless
+  - **.servlerless/** - Contém as configurações do serverless
+  - **utils/** - Contém os utilitários dos serviços aws
+  - **.env** - Contém as variáveis de ambiente necessárias
+  - **.env.example** - Exemplo do arquivo `.env` com as variáveis de ambiente necessárias
+  - **handler.py** - Arquivo dos endpoints / e /v1 do serverless
+  - **post.py** - Arquivo do endopoint /tts do serverless
+  - **package.json** - Arquivo com as dependências node
+  - **requeriments.txt** - Arquivo com as dependências python
+  - **serverless.yml** - Arquivo de inicialização do serverless
+- **assets/** - Contém os diagramas dos esquemas de arquitetura e do dataset
+- **bot/** - Contém o arquivo zip do bot criado no amazon lex
+- **bot/** - Contém o arquivo zip do bot criado no amazon lex
+  - **lambda/** - Contém os arquivos que serão a função lambda do backend do chatbot do lex
+    - **controllers/** - Contém os arquivos controladores das intents do chatbot
+    - **lib/** - Contém arquivo de conexão com o endpoint do serverless
+    - **utils/** - Contém utilitários dos controladores
+    - **index.js** - Contém o arquivo principal da função lambda do backend do chatbot
+  - **node_modules/** - Contém as dependências do server local
+  - **.env** - Contém as variáveis de ambiente necessárias
+  - **.env.example** - Exemplo do arquivo `.env` com as variáveis de ambiente necessárias
+  - **package.json** - Arquivo com as dependências node
+  - **server.js** - Arquivo de execução do server localhost que faz conexão com ngrok
+- **.gitignore** - Arquivo de configuração para ignorar arquivos no repositório Git
+- **README.md** - Documentação do projeto.
+ do modelo no SageMaker.
 
 ## 🚧 Desafios e Soluções
 
