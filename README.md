@@ -1,6 +1,6 @@
-# 🍕🤖 Pizza D'Italy Bot
+# 🍕🤖 Pizza D'Itali Bot
 
-O projeto Pizza D'Italy Bot foi desenvolvido como parte das sprints 6 e 7 do programa de bolsas Compass UOL para formação em machine learning na AWS. Ele consiste em um chatbot de uma pizzaria que foi criado utilizando Amazon Lex.
+O projeto Pizza D'Itali Bot foi desenvolvido como parte das sprints 6 e 7 do programa de bolsas Compass UOL para formação em machine learning na AWS. Ele consiste em um chatbot de uma pizzaria que foi criado utilizando Amazon Lex.
 
 ## 📖 Índice
 
@@ -311,7 +311,50 @@ zip node_modules,package.json,package-lock.json axios.zip
 
 ## 💬 Acesso ao Chatbot
 
-...
+## 🍕 D'Itali Pizzaria
+
+### Visão Geral
+O Chatbot de D'Itali Pizzaria é uma solução automatizada projetada para facilitar o processo de pedidos e fornecer suporte aos clientes de maneira rápida e eficiente. Desenvolvido para ser integrado ao Slack, o chatbot permite que os clientes façam pedidos, consultem o cardápio e obtenham informações detalhadas sobre nossas pizzas diretamente através de uma interface de chat amigável e intuitiva.
+
+### Pré-requisitos
+
+Antes de começar, certifique-se de que você atende aos seguintes pré-requisitos:
+
+- **Conta no Slack**: Você precisará de uma conta no Slack e acesso de administrador ao workspace onde deseja instalar o aplicativo.
+- **Permissão para Instalar Aplicativos**: Certifique-se de que você tem permissão para instalar novos aplicativos no workspace do Slack.
+- **URL de Instalação**: Tenha em mãos o URL de instalação que será utilizado para adicionar o aplicativo ao seu workspace.
+
+### Instalação
+
+Siga os passos abaixo para instalar o D'Itali Pizzaria no seu workspace:
+
+### 1. Acesse o URL de Instalação
+Clique no seguinte link para iniciar o processo de instalação:
+
+**Instalar D'Itali Pizzaria**
+
+(https://slack.com/oauth/v2/authorize?client_id=7485085464023.7496809411237&scope=channels:history,chat:write,im:history,reactions:read,team:read,users:read,commands,mpim:history&user_scope=)
+
+### 2. Autorize o Aplicativo
+- Ao clicar no link, você será redirecionado para a página de autorização do Slack.
+- Selecione o workspace onde deseja instalar o aplicativo e clique em **"Permitir"**.
+- Isso permitirá que o [Nome do Seu Aplicativo] tenha acesso ao seu workspace e possa interagir conforme as permissões listadas.
+
+### 3. Redirecionamento e Conclusão
+- Após autorizar o aplicativo, você será redirecionado automaticamente para a página de confirmação.
+- O [Nome do Seu Aplicativo] agora está instalado no seu workspace do Slack e pronto para ser utilizado.
+
+### 4. Teste o Bot
+- Abra qualquer canal ou conversa direta no Slack onde o bot está presente e comece a interagir com ele usando os comandos disponíveis.
+
+### Solução de Problemas
+
+Se você encontrar algum problema durante o processo de instalação, verifique o seguinte:
+
+- **Permissões de Instalação**: Certifique-se de que você tem as permissões necessárias para adicionar aplicativos ao workspace.
+- **Autorização**: Se o processo de autorização falhar, tente novamente ou entre em contato com o administrador do workspace para assistência.
+- **Erros Comuns**: Se você encontrar um erro com a mensagem "invalid_team_for_non_distributed_app", isso pode significar que o aplicativo não está disponível para instalação pública. Entre em contato com o suporte para mais informações.
+
 
 ## 👥 Contribuidores
 
