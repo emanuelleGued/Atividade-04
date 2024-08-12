@@ -1,0 +1,80 @@
+{
+"Pizzas": [
+    {
+    "Nome": "marguerita",
+    "Tamanho":{
+        "pequena": 20,
+        "pédia": 30,
+        "grande": 40
+    }},
+    {
+    "Nome": "pepperoni",
+    "Tamanho":{
+        "pequena": 22,
+        "média": 32,
+        "grande": 42
+    }},
+    {
+    "Nome": "calabresa",
+    "Tamanho":{
+        "pequena": 24,
+        "média": 34,
+        "grande": 44
+    }},
+    {
+    "Nome": "frango com catupiry",
+    "Tamanho":{
+        "pequena": 26,
+        "média": 36,
+        "grande": 46
+    }},
+    {
+    "Nome": "churrasco",
+    "Tamanho":{
+        "pequena": 28,
+        "média": 38,
+        "grande": 48
+    }},
+    {
+    "Nome": "portuguesa",
+    "Tamanho":{
+        "pequena": 30,
+        "média": 40,
+        "grande": 50
+    }},
+    {
+    "Nome": "marguerita",
+    "Tamanho":{
+        "pequena": 20,
+        "média": 30,
+        "grande": 40
+    }},
+    {
+    "Nome": "napolitana",
+    "Tamanho":{
+        "pequena": 22,
+        "média": 32,
+        "grande": 42
+    }},
+    {
+    "Nome": "toscana",
+    "Tamanho":{
+        "pequena": 24,
+        "média": 34,
+        "grande": 44
+    }},
+    {
+    "Nome": "vegetariana",
+    "Tamanho":{
+        "pequena": 26,
+        "média": 36,
+        "grande": 46
+    }},
+    {
+    "Nome": "quatro queijos",
+    "Tamanho":{
+        "pequena": 30,
+        "média": 36,
+        "grande": 40
+}}]
+}

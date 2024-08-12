@@ -1,114 +1,201 @@
-# Avaliação Sprints 6 e 7 - Programa de Bolsas Compass UOL e AWS - maio/2024
-Avaliação das sexta e sétima sprints do programa de bolsas Compass UOL para formação em machine learning para AWS.
-## Execução (Código Fonte)
+# 🍕🤖 Pizza D'Itali Bot
 
-Crie uma API que irá capturar uma frase qualquer inserida pelo usuário e transformará essa frase em um audio em mp3 via polly.
+O projeto Pizza D'Itali Bot foi desenvolvido como parte das sprints 6 e 7 do programa de bolsas Compass UOL para formação em machine learning na AWS. Ele consiste em um chatbot de uma pizzaria que foi criado utilizando Amazon Lex.
 
-**Especificações**:
+## 📖 Índice
 
-A aplicação deverá ser desenvolvida com o framework 'serverless' e deverá seguir a estrutura que já foi desenvolvida neste repo.
+- [📝 Descrição do Projeto](#-pizza-ditaly-bot)
+- [🏛️ Arquitetura](#️-arquitetura)
+- [⚙️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
+- [🔎 Sobre o Chatbot](#-sobre-o-chatbot)
+- [🚀 Execução e Utilização](#-execução-e-utilização)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Passos de inicialização](#passos-de-inicialização)
+  - [Passos para executar as funções com o Serverless no API Gateway e Lambda](#passos-para-executar-as-funções-com-o-serverless-no-api-gateway-e-lambda)
+  - [Passos para executar o chatbot no Lex e o backend no Lambda](#passos-para-executar-o-chatbot-no-lex-e-o-backend-no-lambda)
+- [🧱 Estrutura do Projeto](#-estrutura-do-projeto)
+- [🚧 Desafios e Soluções](#-desafios-e-soluções)
+- [💬 Acesso ao chatbot](#-acesso-ao-chatbot)
+- [👥 Contribuidores](#-contribuidores)
 
-Passo a passo para iniciar o projeto:
+## 🏛️ Arquitetura
 
-1. Crie a branch para o seu grupo e efetue o clone
+O chatbot segue a arquitetura do diagrama simples abaixo onde o actor usa o canal de conversãção para se comunicar com os serviços de Cloud da AWS:
 
-2. Instale o framework serverless em seu computador. Mais informações [aqui](https://www.serverless.com/framework/docs/getting-started)
+![post-v3-tts](./assets/sprints6-7.jpg)
 
-```json
+## ⚙️ Tecnologias Utilizadas
+
+- **[Lex](https://aws.amazon.com/lex/)** - *Interface do canal de conversação*
+- **[Polly](https://aws.amazon.com/polly/)** - *Conversor de textos para áudio*
+- **[DynamoDB](https://aws.amazon.com/dynamodb/)** - *Armazenamento de dados de texto em objetos*
+- **[S3](https://aws.amazon.com/s3)** - *Armazenamento de arquivos de áudio em Buckets*
+- **[API Gateway](https://aws.amazon.com/api-gateway)** - *Expositor das funções Lambda em forma de endpoint API*
+- **[Lambda](https://aws.amazon.com/lambda)** - *Controlador do backend do Lex e integrador do Polly com S3 e DynamoDB*
+- **[NodeJS](https://nodejs.org/)/[Express](https://expressjs.com)** - *Manipulação do servidor backend em desenvolvimento*
+- **[Serverless](https://www.serverless.com/)** - *Criação de aplicações serverless na AWS*
+- **[Python](https://www.python.org/)** - *Criação das funções Lambda da API de conversão de texto para áudio*
+- **[Boto3](https://www.python.org/)** - *Integração do python com os serviços AWS*
+- **[Ngrok](https://nodejs.org/)/[Express](https://expressjs.com)** - *Exposição do servidor backend de desenvolvimento para ser integrado na função Lambda do Chatbot*
+- **[Axios](https://axios-http.com)** - *Requisição para o endpoint de conversão de texto para áudio*
+- **[Git](https://git-scm.com)/[GitHub](https://github.com)** - *Controle de versão do código*
+- **[Trello](https://trello.com)** - *Gerenciamento e organização das tarefas do projeto*
+
+## 🔎 Sobre o Chatbot
+
+Este projeto é um chatbot desenvolvido para auxiliar os clientes de uma pizzaria a realizarem pedidos, verificar o cardápio, obter detalhes sobre os sabores disponíveis, e mais. O chatbot foi implementado usando o Amazon Lex e possui cinco intents principais para lidar com as interações dos usuários.
+
+## 🤖 Intents do Chatbot
+
+### 1. **WelcomeIntent**
+   - **Descrição:** A `WelcomeIntent` é a intent responsável por cumprimentar o usuário e iniciar a interação. Quando o usuário inicia uma conversa com o chatbot, essa intent é ativada para oferecer uma mensagem de boas-vindas e orientar o usuário sobre o que o bot pode fazer.
+   - **Exemplos de frases:**
+     - "Olá"
+     - "Oi"
+     - "Bom dia"
+     - "Boa tarde"
+
+### 2. **GetMenuIntent**
+   - **Descrição:** A `GetMenuIntent` permite que o usuário visualize o cardápio completo da pizzaria. Ao solicitar o menu, o bot responde com uma lista de todas as pizzas disponíveis, juntamente com seus preços e tamanhos.
+   - **Exemplos de frases:**
+     - "Quero ver o cardápio"
+     - "Me mostre o menu"
+     - "O que vocês têm no cardápio?"
+     - "Quais pizzas vocês têm?"
+
+### 3. **GetDetailsOfPizzaIntent**
+   - **Descrição:** A `GetDetailsOfPizzaIntent` é ativada quando o usuário deseja obter informações detalhadas sobre um sabor específico de pizza. 
+   - **Exemplos de frases:**
+     - "Quais os ingredientes da pizza Marguerita?"
+     - "Me fale mais sobre a pizza Calabresa"
+
+### 4. **OrderPizzaIntent**
+   - **Descrição:** A `OrderPizzaIntent` permite que o usuário faça um pedido de pizza. O bot irá perguntar o sabor, o tamanho e o endereço de entrega. Se o sabor ou tamanho não for especificado inicialmente, o bot irá solicitar essas informações ao usuário.
+   - **Exemplos de frases:**
+     - "Eu gostaria de uma pizza"
+     - "Gostaria de pedir uma pizza"
+     - "Quero uma pizza de Calabresa grande"
+     - "Quero fazer um pedido"
+
+### 5. **FallbackIntent**
+   - **Descrição:** A `FallbackIntent` é a intent padrão que é ativada quando o chatbot não consegue entender a solicitação do usuário ou quando nenhuma das outras intents é adequada para a entrada dada. Esta intent fornece uma mensagem de erro amigável e sugere ao usuário tentar novamente ou reformular sua pergunta.
+
+## 🚀 Execução e Utilização
+
+### Pré-requisitos
+
+- **Git**
+- **Python >=3.11**
+- **NodeJS >=20**
+- **Conta na AWS**
+- **AWS CLI V2**
+- **Conta no Slack**
+
+---
+
+### Passos de inicialização
+
+1. Baixe e instale a AWS CLI V2. Mais informações [aqui](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
+2. Configure a AWS CLI da forma que preferir. Mais informações [aqui](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
+
+3. Clone e abra o projeto no VScode ou editor de preferência:
+
+```bash
+git clone -b grupo-2 --single-branch https://github.com/Compass-pb-aws-2024-MAIO-A/sprints-6-7-pb-aws-maio.git
+cd sprints-6-7-pb-aws-maio
+code .
+```
+
+### Passos para executar as funções com o Serverless no API Gateway e Lambda
+
+1. Instale o framework serverless em seu computador. Mais informações [aqui](https://www.serverless.com/framework/docs/getting-started).
+
+```bash
 npm install -g serverless
 ```
 
-3. Gere suas credenciais (AWS Acess Key e AWS Secret) na console AWS pelo IAM. Mais informações [aqui](https://www.serverless.com/framework/docs/providers/aws/guide/credentials/)
+2. Crie um ambiente virtual python usando o venv. Mais informações [aqui](https://docs.python.org/3/library/venv.html).
 
-4. Em seguida insira as credenciais e execute o comando conforme exemplo:
+3. Na raiz do projeto com o ambiente virtual configurado, instale as dependências de api/ com:
 
-```json
-serverless config credentials \
-  --provider aws \
-  --key AKIAIOSFODNN7EXAMPLE \
-  --secret wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-  ```
-
-Também é possivel configurar via [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) executando o comando:
-
-```json
-$ aws configure
-AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
-AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-Default region name [None]: us-east-1
-Default output format [None]: ENTER
-  ```
-
-#### Observação
-
-As credenciais devem ficar apenas localmente no seu ambiente. Nunca exponha as crendenciais no Readme ou qualquer outro ponto do codigo.
-
-Após executar as instruções acima, o serverless estará pronto para ser utilizado e poderemos publicar a solução na AWS.
-
-5. Para efetuar o deploy da solução na sua conta aws execute (acesse a pasta `api-tts`):
-
+```bash
+pip install -r api/requeriments.txt
 ```
+
+4. Navegue até a pasta /api e crie um arquivo `.env` seguindo o modelo do arquivo [.env.example](/api/.env.example)
+
+5. Na pasta api/, instale as depedências node com:
+
+```bash
+npm install
+```
+
+6. Execute o comando do serverless dentro da pasta api/ e utilize a opção de login para ser logado em uma conta.
+
+```bash
+serverless # caso esteja com problema de permissão do usuário, use "npx serverless"
+```
+
+7. Após estar logado no serverless e na AWS CLI, execute o deploy da aplicação serverless:
+
+```bash
 serverless deploy
 ```
 
-Depois de efetuar o deploy, vocẽ terá um retorno parecido com isso:
+- Depois de efetuar o deploy, vocẽ terá um retorno parecido com isso no terminal:
 
 ```bash
-Deploying api-tts to stage dev (us-east-1)
+DOTENV: Loading environment variables from .env:
 
-Service deployed to stack api-tts-dev (85s)
+         - S3_BUCKET_NAME
+
+         - DYNAMODB_TABLE
+
+         - PROFILE_NAME
+
+Deploying "api-tts" to stage "dev" (us-east-1)
+
+✔ Service deployed to stack api-tts-dev (111s)
 
 endpoints:
   GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
   GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/v1
+  POST - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/v1/tts
 functions:
-  health: api-tts-dev-health (2.1 kB)
-  v1Description: api-tts-dev-v1Description (2.1 kB)
-  v2Description: api-tts-dev-v2Description (2.1 kB)
+  health: api-tts-dev-health (55 MB)
+  v1Description: api-tts-dev-v1Description (55 MB)
+  v1_tts: api-tts-dev-v1_tts (55 MB)
 ```
 
-6. Abra o browser e confirme que a solução está funcionando colando os 3 endpoints que deixamos como exemplo:
+6. Abra um testador de api, como o `Postman`, e teste os endpoints abaixo que podem ter as seguintes retornos:
 
-### Rota 1 → Get /
-
-1. Esta rota já está presente no projeto
-2. O retorno rota é:
+#### Rota 1 → Get /
 
 ```json
   {
-    "message": "Go Serverless v3.0! Your function executed successfully!",
+    "message": "Go Serverless v4.1! Your function executed successfully!",
     "input": { 
         ...(event)
       }
   }
 ```
 
-3. Status code para sucesso da requisição será `200`
+- Status code para sucesso da requisição será `200`
 
-### Rota 2 → Get /v1
-
-1. Esta rota já está presente no projeto
-2. O retorno rota é:
+#### Rota 2 → Get /v1
 
 ```json
   {
     "message": "TTS api version 1."
   }
- 
 ```
 
-3. Status code para sucesso da requisição será `200`
+- Status code para sucesso da requisição será `200`
 
+#### Rota 3 → Post /v1/tts
 
-***
-
-Após conseguir rodar o projeto base o objetivo final será divida em duas partes:
-
-## Atividade -> Parte 1
-
-### Rota 3 -> Post /v1/tts
-
-Deverá ser criada a rota `/v1/tts` que receberá um post no formato abaixo:
+- Deverá receber um post `json` com o seguinte formato
 
 ```json
   {
@@ -116,90 +203,162 @@ Deverá ser criada a rota `/v1/tts` que receberá um post no formato abaixo:
   }
 ```
 
-- Deverá ser criada uma lógica para que a frase recebida seja um id único (um _hash code_);
-- Esse hash será o atributo chave em nosso DynamoDB - exemplo: "Teste 123" será sempre o id "123456";
-- O texto da frase recebida deverá ser transformado em áudio via AWS Polly;
-- O áudio deverá ser armazenado em um bucket S3 (que deverá ser público, apenas para a nossa avaliação);
-- Deverá utilizar a lógica de _hash code_ para verificar se a frase já foi gerada anteriormente;
-- Caso o hash (_unique_id_) já exista no DynamoDB entregue o retorno conforme abaixo;
-- Caso não exista, faça a geração do áudio, grave no s3 e grave as referências no dynamoDB.
-
-Resposta a ser entregue:
+- Resposta a ser entregue é tem um status `201` com um `json` assim:
 
 ```json
   {
-    "received_phrase": "converta esse texto para áudio",
+    "received_phrase": "converta esse texto para áudio...",
     "url_to_audio": "https://meu-buckect/audio-xyz.mp3",
     "created_audio": "02-02-2023 17:00:00",
     "unique_id": "123456"
   }
 ```
 
-Exemplos de referência:
+---
 
-- <https://github.com/hussainanjar/polly-lambda> (Python)
-- <https://github.com/serverless/examples/tree/v3/aws-python-http-api-with-dynamodb> (Python)
+### Passos para executar o chatbot no Lex e o backend no Lambda
 
-***
+1. Abra o console aws na página do Amazon Lex vá na opção de importar um chatbot, selecione o arquivo `zip` que está na pasta bot/ e crie um bot com o nome e preferências que quiser, após importado faça o build do chatbot.
 
-## Atividade -> Parte 2
+2. Crie uma pasta com nome de preferência no seu ambiente local, inicie um projeto node, instale o axios e depois faça um zip dos arquivos da pasta, use os comandos:
 
-Com base na [Documentação Amazon Lex](https://compasso-my.sharepoint.com/:f:/g/personal/lucas_sousa_compasso_com_br/Eph8d9BDeRhGhBzyoAYRLZUBhfjA54P1-5YHERGaN5_Osg?e=1ibFDI), crie um chatbot utilizando o Amazon Lex V2 e o conecte a uma plataforma de mensageria.
+```bash
+npm init -y
+npm install axios
+zip node_modules,package.json,package-lock.json axios.zip
+```
 
-**Especificações**:
+3. Volte para o console, vá em Amazon Lambda e em Layers, crie uma layer com este zip gerado, com nome de sua preferência.
 
-- Função do chatbot é de livre escolha do desenvolvedor;
-- Conexões: O chatbot deve ser disponibilizado em uma das seguintes plataformas:  
-  - Slack - [Conexão Slack](https://docs.aws.amazon.com/pt_br/lex/latest/dg/slack-bot-association.html);  
-  - Web - [Web](https://github.com/aws-samples/aws-lex-web-ui);
-- Construção:
-  - Intents:
-    - O chatbot deve possuir ao menos 4 intents distintas;  
-  - Slots:
-    - Captação de informações presentes no texto;
-    - Solicitação de informações quando o slot não for reconhecido;
-    - Confirmação de informações;
-    - O chatbot deve captar ao menos 3 slots no decorrer do fluxo;
-- O chatbot deve utilizar-se de menu com botões (Response Cards);
-- Tratamento de erros (fallback);
-- Deve ter a opção de enviar a resposta em áudio, utilizando o texto de resposta do chatbot, com uso da API da Parte 1 deste trabalho;
-- (Opcional) Uso de conditional branching para controle de fluxos ([Doc Conditional Branching](https://docs.aws.amazon.com/pt_br/lexv2/latest/dg/paths-branching.html));
+4. Ainda no Amazon Lambda, agora crie uma função de lambda com tudo que estiver na pasta server/lambda/ e utilize a layer criada acima.
 
-Ao final, a arquitetura a ser implantada deverá estar assim:
+5. Configure a variável de ambiente que está localizada em [.env.example](server/.env.example) na sua função de lambda, essa varíavel é o endpoint do serverless gerado com os passos acima.
 
-![post-v3-tts](./assets/sprints6-7.jpg)
+6. Volte no seu bot do Amazon Lex e configure esta função de lambda em **deployment > aliases > alias_name > alias language support > lambda function**.
 
-***
+7. Faça testes no chat ou se preferir pule esta etapa e já configure o chatbot no Slack. Mais informações [aqui](https://docs.aws.amazon.com/pt_br/lex/latest/dg/slack-bot-assoc-create-assoc.html).
 
-## O que será avaliado?
+## 🧱 Estrutura do Projeto
 
-- Projeto em produção na AWS;
-- Em python conforme projeto base disponibilizado;
-- Infra-estrutura como codigo;
-- Seguir as atividades na ordem proposta;
-- Sobre as rotas:
-  - Possuir a rota com o retorno esperado (somente campos solicitados conforme especificação);
-- Entendimento do chatbot e o que ele soluciona;
-- Criatividade em relação ao tema escolhido para o desenvolvimento do chatbot;
-- Intents e slots criados e informações que eles se dispõem a obter;
-- Organização:  
-  - Estrutura de intenções;  
-  - Estrutura da lógica de negócio;  
-  - Divisão de responsabilidades da equipe;  
-  - Funcionalidade do chatbot;
-- Objetividade do README.md.
+```plaintext
+.
+├── .venv/
+├── api/
+│   ├── utils/
+│   ├── .env.example
+│   ├── handler.py
+│   ├── post.py
+│   ├── package.json
+│   ├── requeriments.txt
+│   ├── serverless.yml
+├── assets/
+├── bot
+├── server
+│   ├── lambda/
+│   |   ├── controllers/
+│   |   ├── lib/
+│   |   ├── utils/
+│   |   ├── index.js
+│   ├── .env.example
+│   ├── package.json
+│   ├── server.js
+```
 
-***
+---
 
-## Entrega
+- **.venv/** - Contém as dependências do serverless
+- **api/** - Contém as rotas, esquemas e utilitários da API serverless
+  - **node_modules/** - Contém as dependências do serverless
+  - **.servlerless/** - Contém as configurações do serverless
+  - **utils/** - Contém os utilitários dos serviços aws
+  - **.env** - Contém as variáveis de ambiente necessárias
+  - **.env.example** - Exemplo do arquivo `.env` com as variáveis de ambiente necessárias
+  - **handler.py** - Arquivo dos endpoints / e /v1 do serverless
+  - **post.py** - Arquivo do endopoint /tts do serverless
+  - **package.json** - Arquivo com as dependências node
+  - **requeriments.txt** - Arquivo com as dependências python
+  - **serverless.yml** - Arquivo de inicialização do serverless
+- **assets/** - Contém os diagramas dos esquemas de arquitetura e do dataset
+- **bot/** - Contém o arquivo zip do bot criado no amazon lex
+- **bot/** - Contém o arquivo zip do bot criado no amazon lex
+  - **lambda/** - Contém os arquivos que serão a função lambda do backend do chatbot do lex
+    - **controllers/** - Contém os arquivos controladores das intents do chatbot
+    - **lib/** - Contém arquivo de conexão com o endpoint do serverless
+    - **utils/** - Contém utilitários dos controladores
+    - **index.js** - Contém o arquivo principal da função lambda do backend do chatbot
+  - **node_modules/** - Contém as dependências do server local
+  - **.env** - Contém as variáveis de ambiente necessárias
+  - **.env.example** - Exemplo do arquivo `.env` com as variáveis de ambiente necessárias
+  - **package.json** - Arquivo com as dependências node
+  - **server.js** - Arquivo de execução do server localhost que faz conexão com ngrok
+- **.gitignore** - Arquivo de configuração para ignorar arquivos no repositório Git
+- **README.md** - Documentação do projeto.
+ do modelo no SageMaker.
 
-- **O trabalho deve ser feito em grupos de três ou quatro pessoas**;
-  - Evitar repetições de grupos da sprint anterior;
-- Criar uma branch no repositório com o formato grupo-número (Exemplo: grupo-1);
-- Subir o trabalho na branch com um Readme.md;
-  - Documentar detalhes sobre como a avaliação foi desenvolvida;
-  - Dificuldades conhecidas;
-  - Como utilizar o sistema;
-  - Export do bot Lex em formato .zip;
-  - 🔨 código fonte desenvolvido (Sugestão: pasta `src`)
-  - O prazo de entrega é até às 09h do dia 12/08/2024 no repositório do github (https://github.com/Compass-pb-aws-2024-MAIO-A/sprints-6-7-pb-aws-maio).
+## 🚧 Desafios e Soluções
+
+### 1. Confiança Elevada em Intents Inesperadas
+- **Desafio:** O bot estava acionando intents como `WelcomeIntent` com uma confiança alta, mesmo para entradas irrelevantes, como um simples "s". Isso causava comportamentos indesejados no bot, que respondia inadequadamente a entradas que deveriam ter acionado o fallback.
+- **Solução:** Foram revisadas as utterances (frases de treinamento) das intents, adicionando novas frases e refinando as existentes para melhorar a precisão do NLU. Além disso, foram implementados filtros no código para garantir que apenas intents com confiança superior a 0.85 fossem acionadas.
+
+### 2. Fallback Ineficiente
+- **Desafio:** O fallback do bot não estava funcionando conforme o esperado, resultando em respostas inadequadas quando o bot não conseguia entender a entrada do usuário.
+- **Solução:** Foi revisado e corrigido o código do fallback para garantir que qualquer entrada não compreendida pelo bot acionasse corretamente a intent de fallback. Além disso, melhorias foram feitas nas mensagens de fallback para fornecer uma melhor experiência ao usuário.
+
+### 3. Configuração e Estruturação do Projeto
+- **Desafio:** Durante o desenvolvimento, surgiu a necessidade de uma estrutura de projeto clara e organizada, especialmente ao lidar com múltiplas intents e funções de manipulação em Lambda.
+- **Solução:** A estrutura do projeto foi organizada em pastas específicas para os controladores (`controllers`) e utilitários (`utils`), separando as responsabilidades e facilitando a manutenção do código. Além disso, scripts para gerenciamento das branches e commits foram estabelecidos para manter um fluxo de trabalho limpo e eficiente.
+
+## 💬 Acesso ao Chatbot
+
+## 🍕 D'Itali Pizzaria
+
+### Visão Geral
+O Chatbot de D'Itali Pizzaria é uma solução automatizada projetada para facilitar o processo de pedidos e fornecer suporte aos clientes de maneira rápida e eficiente. Desenvolvido para ser integrado ao Slack, o chatbot permite que os clientes façam pedidos, consultem o cardápio e obtenham informações detalhadas sobre nossas pizzas diretamente através de uma interface de chat amigável e intuitiva.
+
+### Pré-requisitos
+
+Antes de começar, certifique-se de que você atende aos seguintes pré-requisitos:
+
+- **Conta no Slack**: Você precisará de uma conta no Slack e acesso de administrador ao workspace onde deseja instalar o aplicativo.
+- **Permissão para Instalar Aplicativos**: Certifique-se de que você tem permissão para instalar novos aplicativos no workspace do Slack.
+- **URL de Instalação**: Tenha em mãos o URL de instalação que será utilizado para adicionar o aplicativo ao seu workspace.
+
+### Instalação
+
+Siga os passos abaixo para instalar o D'Itali Pizzaria no seu workspace:
+
+### 1. Acesse o URL de Instalação
+Clique no seguinte link para iniciar o processo de instalação:
+
+**Instalar D'Itali Pizzaria**
+
+(https://slack.com/oauth/v2/authorize?client_id=7485085464023.7496809411237&scope=channels:history,chat:write,im:history,reactions:read,team:read,users:read,commands,mpim:history&user_scope=)
+
+### 2. Autorize o Aplicativo
+- Ao clicar no link, você será redirecionado para a página de autorização do Slack.
+- Selecione o workspace onde deseja instalar o aplicativo e clique em **"Permitir"**.
+- Isso permitirá que o [Nome do Seu Aplicativo] tenha acesso ao seu workspace e possa interagir conforme as permissões listadas.
+
+### 3. Redirecionamento e Conclusão
+- Após autorizar o aplicativo, você será redirecionado automaticamente para a página de confirmação.
+- O [Nome do Seu Aplicativo] agora está instalado no seu workspace do Slack e pronto para ser utilizado.
+
+### 4. Teste o Bot
+- Abra qualquer canal ou conversa direta no Slack onde o bot está presente e comece a interagir com ele usando os comandos disponíveis.
+
+### Solução de Problemas
+
+Se você encontrar algum problema durante o processo de instalação, verifique o seguinte:
+
+- **Permissões de Instalação**: Certifique-se de que você tem as permissões necessárias para adicionar aplicativos ao workspace.
+- **Autorização**: Se o processo de autorização falhar, tente novamente ou entre em contato com o administrador do workspace para assistência.
+- **Erros Comuns**: Se você encontrar um erro com a mensagem "invalid_team_for_non_distributed_app", isso pode significar que o aplicativo não está disponível para instalação pública. Entre em contato com o suporte para mais informações.
+
+
+## 👥 Contribuidores
+
+- **[Arthur Lyra](https://github.com/arthur-lyra)**
+- **[Emanuelle Garcia](https://github.com/emanuelleGued)**
+- **[Ester Trevisan](https://github.com/estertrvs)**
+- **[Richard Freitas](https://github.com/wesleyfreit)**
