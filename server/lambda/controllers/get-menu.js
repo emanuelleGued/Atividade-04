@@ -4,7 +4,7 @@ export const handleGetMenuIntent = async (event) => {
   const menu = `
   Aqui está o nosso cardápio de pizzas:
 
-  Margherita:
+  Marguerita:
   - Pequena: R$ 20
   - Média: R$ 30
   - Grande: R$ 40

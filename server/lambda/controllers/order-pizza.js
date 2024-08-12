@@ -1,6 +1,7 @@
 import { getPizzaPrice } from '../utils/get-pizza-price.js';
 import { handleResponse } from '../utils/response-builder.js';
 import { generateTTS } from '../utils/generate-tts.js';
+import pizzasData from '../utils/Pizzas.json' assert { type: 'json' };
 
 export const handleOrderPizzaIntent = async (event) => {
   let responseMessage = "";
@@ -11,10 +12,13 @@ export const handleOrderPizzaIntent = async (event) => {
 
     // Verificação do tipo de pizza
     if (PizzaType && PizzaType.value) {
-      let pizzaTypeSlot = PizzaType.value.resolvedValues[0]?.toLowerCase().trim();
+      let pizzaTypeSlot = PizzaType.value.originalValue.toLowerCase().trim();
 
-      if (pizzaTypeSlot) {
-        responseMessage = `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
+      const pizzas = pizzasData.Pizzas;
+      const pizza = pizzas.find(p => p.Nome === pizzaTypeSlot);
+
+      if (pizza) {
+          responseMessage = `Você escolheu uma pizza de ${pizzaTypeSlot}. `;
       } else {
         responseMessage = "Desculpe, não temos essa pizza no cardápio.";
         return handleResponse(event, 'ElicitSlot', 'PizzaType', responseMessage);
@@ -25,7 +29,7 @@ export const handleOrderPizzaIntent = async (event) => {
 
     // Verificação do tamanho da pizza
     if (PizzaSize && PizzaSize.value) {
-      let pizzaSizeSlot = PizzaSize.value.resolvedValues[0]?.toLowerCase().trim();
+      let pizzaSizeSlot = PizzaSize.value.originalValue.toLowerCase().trim();
 
       if (pizzaSizeSlot) {
         responseMessage += `Tamanho escolhido: ${pizzaSizeSlot}. `;

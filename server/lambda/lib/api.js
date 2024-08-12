@@ -10,8 +10,6 @@ export const api = axios.create({
 
 // Adicionar um interceptor de request para ver o URL completo
 api.interceptors.request.use(request => {
-  console.log(`Requesting URL: ${request.baseURL}${request.url}`);
-  console.log('Headers enviados:', request.headers);
   return request;
 });
 
