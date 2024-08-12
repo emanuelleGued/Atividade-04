@@ -1,19 +1,13 @@
 import { getPizzaPrice } from '../utils/get-pizza-price.js';
 import { handleResponse } from '../utils/response-builder.js';
 import { generateTTS } from '../utils/generate-tts.js';
-import { promises as fs } from 'fs';
-import path from 'path';
-
-// __dirname não está disponível em módulos ES6, então precisamos definir o caminho de forma diferente.
-const PizzasPath = path.resolve(path.dirname(''), '../server/lambda/utils/Pizzas.json');
+import { getPizzas } from '../utils/get-pizzas.js';
 
 export const handleOrderPizzaIntent = async (event) => {
   let responseMessage = "";
 
   try {
-    // Carregar o conteúdo do arquivo JSON
-    const data = await fs.readFile(PizzasPath, 'utf-8');
-    const pizzasData = JSON.parse(data);
+    const pizzasData = await getPizzas();
 
     const { PizzaType, PizzaSize, DeliveryAddress } = event.sessionState.intent.slots;
 
