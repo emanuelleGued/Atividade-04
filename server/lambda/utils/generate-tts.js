@@ -4,7 +4,6 @@ import { api } from '../lib/api.js';
 export const generateTTS = async (phrase) => {
   try {
     const payload = { phrase };
-    console.log("Payload enviado para a API de TTS:", payload);
 
     const ttsResponse = await api.post('/v1/tts', payload);
     return ttsResponse.data.url_to_audio;
