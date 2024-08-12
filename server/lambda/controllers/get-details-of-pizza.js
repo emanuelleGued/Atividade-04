@@ -54,11 +54,11 @@ export const handleGetDetailsOfPizzaIntent = async (event) => {
             return handleResponse(event, 'Close', null, [responseMessage, audioUrl]);
         } catch (error) {
             // Retornar a resposta final em caso de falha na geração do áudio
-            return handleResponse(event, 'Failed', null, 'Houve um problema ao gerar o áudio da resposta.');
+            return handleResponse(event, 'Fulfilled', null, 'Houve um problema ao gerar o áudio da resposta.');
         }
 
     } catch (error) {
         // Retornar a resposta final em caso de erro no processamento
-        return handleResponse(event, 'Failed', null, 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
+        return handleResponse(event, 'Fulfilled', null, 'Ocorreu um erro ao processar seu pedido. Por favor, tente novamente.');
     }
 };
